@@ -9,8 +9,8 @@ import { sanitizeDataset } from '../lib/validate';
 
 export const realDataset: Dataset = {
   meta: {
-    id: 'real-2026', label: 'Candidaturas 29N (en verificación)', mode: 'real', updatedAt: '2026-10-07',
-    notice: 'Las candidaturas se proclaman el 3 de noviembre. Las posiciones se añaden a medida que se verifican en fuentes primarias.',
+    id: 'real-2026', label: 'Candidaturas 29N · posiciones de los programas de 2023', mode: 'real', updatedAt: '2026-10-07',
+    notice: 'Hasta que se publiquen los programas del 29N, las posiciones salen de los programas de las generales de 2023 y, si no se pronuncian, de la actuación de cada partido en el Congreso (marcadas como estimadas). Las candidaturas se proclaman el 3 de noviembre.',
   },
   topics, questions, parties: realParties, positions: realPositions, sources: realSources, proposals: realProposals,
 };

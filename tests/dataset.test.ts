@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { demoDataset, realDataset } from '../src/data';
 import { validateDataset, sanitizeDataset } from '../src/lib/validate';
+import { computeResults } from '../src/lib/scoring';
 import type { Dataset } from '../src/types';
 
 describe.each([['demo', demoDataset], ['real', realDataset]] as const)('dataset %s', (_name, ds) => {
@@ -51,5 +52,35 @@ describe('el validador detecta problemas', () => {
     const d = broken(); d.positions[0]!.value = 7;
     const { dataset } = sanitizeDataset(d);
     expect(dataset.positions).toHaveLength(d.positions.length - 1);
+  });
+});
+
+describe('dataset real: posiciones de los programas de 2023', () => {
+  const ds = sanitizeDataset(realDataset).dataset;
+  const rapid = ds.questions.filter((q) => q.set === 'rapido');
+  const like = (party: string, qs = rapid) =>
+    Object.fromEntries(qs.map((q) => [q.id, ds.positions.find((x) => x.party === party && x.question === q.id)?.value ?? 0]));
+
+  it('ninguna posición se descarta al sanear', () => expect(ds.positions).toHaveLength(realDataset.positions.length));
+
+  it('las posiciones estimadas apuntan a la actuación en el Congreso, no al programa', () => {
+    for (const p of ds.positions.filter((x) => x.estimated)) expect(p.sourceId, `${p.party}:${p.question}`).toMatch(/-congreso$/);
+    for (const p of ds.positions.filter((x) => !x.estimated)) expect(p.sourceId, `${p.party}:${p.question}`).toMatch(/-programa-2023$/);
+  });
+
+  it('cada propuesta cita página del programa', () => {
+    expect(ds.proposals.length).toBeGreaterThan(100);
+    for (const pr of ds.proposals) expect(pr.reference).toMatch(/^p\. \d+ del PDF$/);
+  });
+
+  it('test rápido: quien responde como un partido lo tiene primero', () => {
+    const inRanking = ds.parties.map((p) => p.id).filter((id) => computeResults(ds, like(id)).ranking.some((r) => r.party.id === id));
+    expect(inRanking.length).toBeGreaterThanOrEqual(10);
+    for (const id of inRanking) expect(computeResults(ds, like(id)).ranking[0]!.party.id, id).toBe(id);
+  });
+
+  it('test completo: también funciona con las 30 preguntas', () => {
+    for (const id of ['psoe', 'pp', 'vox', 'sumar', 'erc', 'bildu', 'bng'])
+      expect(computeResults(ds, like(id, ds.questions)).ranking[0]!.party.id, id).toBe(id);
   });
 });

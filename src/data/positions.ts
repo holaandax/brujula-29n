@@ -1,30 +1,341 @@
 import type { Position, Proposal, Source } from '../types';
+import { SCORING } from '../config';
+import { questions } from './questions';
 
 /**
- * POSICIONES REALES — VACÍO A PROPÓSITO.
+ * POSICIONES REALES — PROGRAMAS DE LAS GENERALES DE 2023 (23J).
  *
- * No se ha introducido ninguna posición porque los programas electorales del 29N
- * todavía no están publicados y no se ha completado la verificación contra fuente primaria.
- * Una posición ausente se trata como "no disponible" (nunca como neutral).
+ * Los programas del 29N todavía no se han publicado. Mientras tanto, cada posición sale del programa
+ * con el que la formación concurrió el 23 de julio de 2023 ('p': página del PDF enlazado) y, solo cuando
+ * el programa no se pronuncia, de su actuación en el Congreso en la XV legislatura ('v'). Estas últimas
+ * se marcan como estimadas y su confianza no supera SCORING.maxEstimatedConfidence.
  *
- * Plantilla para añadir una posición (ver docs/DATOS.md):
+ * Excepciones:
+ *  - Podemos concurrió en 2023 dentro de Sumar: se usa el programa de Sumar y, donde se ha separado, sus votaciones.
+ *  - UPN no publicó programa propio para las generales: se usa su programa para las elecciones forales de mayo de 2023.
+ *  - Coalición Canaria concurrió con un manifiesto de 14 páginas centrado en Canarias: casi todas sus posiciones quedan sin dato.
  *
- * { party: 'psoe', question: 'q05', value: 1, confidence: 1, sourceId: 'psoe-programa-2026',
- *   note: 'Apartado X, p. NN', updatedAt: '2026-11-05' }
+ * Una pregunta sin fila = no disponible (nunca neutral). Codificación hecha el 07/10/2026; conviene una
+ * segunda codificación independiente (docs/DATOS.md) y sustituirla por los programas de 2026 cuando salgan.
  */
-export const realPositions: Position[] = [];
+const U = '2026-10-07';
+
+const program = (party: string, title: string, url: string, date?: string, type: Source['type'] = 'programa'): Source =>
+  ({ id: `${party}-programa-2023`, party, type, title, url, ...(date ? { date } : {}) });
+const congreso = (party: string): Source => ({
+  id: `${party}-congreso`, party, type: 'declaracion_oficial',
+  title: 'Votaciones, iniciativas y declaraciones en el Congreso (XV legislatura)',
+  url: 'https://www.congreso.es/es/opendata/votaciones',
+});
+
+export const realSources: Source[] = [
+  program('psoe', 'Programa electoral elecciones generales 23 de julio de 2023', 'https://www.psoe.es/media-content/2023/07/PROGRAMA_ELECTORAL-GENERALES-2023.pdf', '2023-07-07'),
+  program('pp', 'Programa electoral elecciones generales 2023', 'https://www.pp.es/wp-content/uploads/2023/07/programa_electoral_pp_23j_feijoo_2023.pdf', '2023-07-04'),
+  program('vox', 'Programa electoral elecciones generales 2023 (copia publicada por The Objective)', 'https://theobjective.com/wp-content/uploads/2023/07/programa-vox-23j.pdf'),
+  program('sumar', 'Un programa para ti. Elecciones generales 2023 (copia publicada por Verdes Equo)', 'https://verdesequo.es/wp-content/uploads/2023/07/Un-programa-para-ti.pdf'),
+  program('podemos', 'Programa de Sumar para el 23J (Podemos concurrió dentro de la coalición)', 'https://verdesequo.es/wp-content/uploads/2023/07/Un-programa-para-ti.pdf', undefined, 'documento_programatico'),
+  program('erc', 'Defensa Catalunya! Programa electoral eleccions espanyoles 2023', 'https://static.esquerra.cat/uploads/20230905/e2023-programa.pdf'),
+  program('junts', 'Programa electoral eleccions generals 2023 (copia publicada por betevé)', 'https://img.beteve.cat/wp-content/uploads/2023/07/programa-junts-per-catalunya-eleccions-generals-2023.pdf'),
+  program('bildu', 'Compromiso de Euskal Herria Bildu. Elecciones generales 2023 (copia publicada por El Nacional)', 'https://www.elnacional.cat/uploads/s1/42/81/42/33/programa-electoral-eh-bildu-eleccions-generals-2023.pdf'),
+  program('pnv', 'Con voz propia. Programa electoral 23-J', 'https://www.eaj-pnv.eus/es/adjuntos-documentos/20945/pdf/con-voz-propia-programa-electoral-23-j'),
+  program('bng', 'Que Galiza conte! Con máis forza! Programa eleccións xerais 2023', 'https://www.bng.gal/media/bnggaliza/files/2023/07/05/23_bng_xerais_programa.pdf', '2023-07-05'),
+  program('cc', 'Manifiesto «Un objetivo común, la defensa de Canarias» (generales 2023)', 'https://coalicioncanaria.org/wp-content/uploads/cc-pdf/programas-electorales/00_COALICION%20POR%20CANARIAS.pdf', '2023-06-26'),
+  program('upn', 'Banderas. Programa electoral de UPN 2023–2027, elecciones forales (resumen oficial)', 'https://elecciones.upn.org/wp-content/uploads/2023/05/lecturafacil_ok.pdf', undefined, 'documento_programatico'),
+  ...['psoe', 'pp', 'vox', 'sumar', 'podemos', 'erc', 'junts', 'bildu', 'pnv', 'bng', 'cc', 'upn'].map(congreso),
+];
+
+/** [pregunta, valor, 'p' = programa 2023 | 'v' = actuación en el Congreso (estimada), página del PDF, nota]. */
+type Row = [question: string, value: number, kind: 'p' | 'v', page: number | null, note: string];
+
+const ROWS: Record<string, Row[]> = {
+  psoe: [
+    ['q01', 0.5, 'p', 38, "Reforma fiscal «coordinada con la política de gasto social» y fiscalidad progresiva."],
+    ['q02', 0.5, 'p', 39, "Evaluar el impuesto de solidaridad de las grandes fortunas y avanzar en la tributación de la riqueza."],
+    ['q03', 0, 'p', 24, "Reducir déficit y deuda «en línea con las reglas europeas», compatible con el crecimiento; no plantea recortes."],
+    ['q04', 0.5, 'p', 50, "Proyectos piloto de reducción de jornada «sin merma salarial»."],
+    ['q05', 1, 'p', 221, "Desarrollar las medidas de contención de precios de la Ley de vivienda."],
+    ['q06', -0.5, 'p', 99, "Objetivo del 20 % de vivienda pública y reservas de suelo para vivienda protegida."],
+    ['q07', 0.5, 'p', 196, "«Rechazo frontal» a la privatización de la sanidad pública."],
+    ['q08', -0.5, 'p', 107, "Combatir la segregación escolar en los centros concertados; no amplía la concertada."],
+    ['q09', 1, 'p', 140, "«La paridad como requisito democrático»: paridad en puestos directivos públicos y privados."],
+    ['q10', 1, 'p', 197, "Defiende la Ley de Eutanasia aprobada como «un nuevo derecho»."],
+    ['q11', 1, 'p', 214, "Desarrollar las medidas de la ley trans y LGTBI."],
+    ['q12', 0, 'p', 239, "Reducir las llegadas irregulares y salvar vidas, «sin caer en el populismo»; combina control y derechos."],
+    ['q13', 0.5, 'v', null, "Votó a favor de tramitar la ILP de regularización extraordinaria (abril de 2024)."],
+    ['q15', -1, 'p', 75, "«Desmantelamiento ordenado y progresivo de las centrales nucleares»."],
+    ['q16', 1, 'p', 87, "Objetivos europeos de neutralidad climática y reducción de emisiones."],
+    ['q17', 0, 'p', 230, "Reforzar la cogobernanza y la cooperación del Estado autonómico, sin cambiar el reparto de competencias."],
+    ['q18', -1, 'v', null, "Rechaza los referéndums de autodeterminación; vota en contra de las iniciativas que los piden."],
+    ['q19', 0.5, 'p', 259, "Apoya que el proyecto europeo siga avanzando y una Europa con más capacidades comunes."],
+    ['q20', 0, 'v', null, "Se comprometió al 2 % del PIB pero rechazó el objetivo del 5 % de la cumbre de la OTAN de 2025."],
+    ['q21', -0.5, 'p', 167, "Defiende su reforma de pensiones, que no retrasa la edad legal más allá de los 67 años."],
+    ['q22', 1, 'p', 188, "Consolidar el Ingreso Mínimo Vital."],
+    ['q23', -0.5, 'p', 39, "Acabar con la «competencia fiscal desleal entre territorios» en la tributación de la riqueza."],
+    ['q25', 1, 'v', null, "Impulsó la reforma del Reglamento del Congreso que permite usar las lenguas cooficiales (2023)."],
+    ['q26', -1, 'v', null, "Vota en contra de las iniciativas para un referéndum sobre la monarquía."],
+    ['q27', -1, 'p', 248, "Mantener el sistema actual de elección del CGPJ por las Cortes («doble legitimación»)."],
+    ['q28', 0.5, 'p', 63, "Las pequeñas y medianas explotaciones familiares, «piedra angular» del sistema agroalimentario."],
+    ['q29', 0.5, 'p', 74, "Ley para identificar áreas idóneas para renovables junto a comunidades y municipios."],
+    ['q30', 1, 'p', 138, "Defiende la reforma de 2023 de la ley del aborto."],
+  ],
+  pp: [
+    ['q01', -0.5, 'p', 23, "Propone reducir la presión fiscal y controlar el gasto con eficiencia, sin plantear recortes de servicios."],
+    ['q02', -1, 'p', 23, "«Eliminaremos el impuesto a las grandes fortunas»."],
+    ['q03', 0.5, 'p', 23, "Objetivo «Controlar el déficit y la deuda»."],
+    ['q04', -1, 'v', null, "Votó la enmienda a la totalidad que tumbó la reducción de la jornada a 37,5 horas (septiembre de 2025)."],
+    ['q05', -1, 'p', 34, "«Derogaremos la ley de vivienda»."],
+    ['q06', 1, 'p', 34, "Movilizar suelo y construir viviendas a precios más asequibles."],
+    ['q08', 1, 'p', 51, "Libertad de los padres para elegir centro: público, privado o concertado."],
+    ['q09', 0.5, 'p', 21, "Planes de igualdad con objetivos concretos y evaluables; no menciona cuotas."],
+    ['q10', -0.5, 'p', 48, "«Revisaremos la Ley de Eutanasia» y más cuidados paliativos."],
+    ['q11', -0.5, 'p', 64, "Propone una nueva ley para las personas transexuales en sustitución de la vigente."],
+    ['q12', 0.5, 'p', 81, "Refuerzo de la gestión integrada de fronteras y de la lucha contra la inmigración irregular."],
+    ['q14', 1, 'p', 81, "Reforma del Código Penal sobre multirreincidencia y ampliación de la prisión permanente revisable."],
+    ['q15', 1, 'p', 38, "Extensión de la vida útil de las centrales nucleares existentes."],
+    ['q16', 0.5, 'p', 27, "Ambición en mitigación de emisiones «bajo la premisa de una transición ecológica justa»."],
+    ['q17', 0, 'p', 78, "Defiende el Estado autonómico actual con lealtad y cooperación; no propone traspasos ni recentralización."],
+    ['q18', -1, 'p', 72, "Propone sancionar la convocatoria de referendos o consultas no autorizadas."],
+    ['q19', 0.5, 'p', 99, "Una UE «con una sola voz» y autonomía estratégica en seguridad y defensa."],
+    ['q20', 1, 'p', 103, "«Cumpliremos el compromiso [...] de destinar un 2 % del PIB» a defensa (objetivo de 2023)."],
+    ['q22', 0.5, 'p', 18, "Mejorar el acceso al Ingreso Mínimo Vital y su efectividad."],
+    ['q24', -0.5, 'p', 51, "Ambas lenguas vehiculares según un «patrón de equilibrio lingüístico»."],
+    ['q25', -1, 'v', null, "Votó en contra de la reforma del Reglamento del Congreso que permite usar las lenguas cooficiales (2023)."],
+    ['q26', -1, 'v', null, "Ha votado en contra de las iniciativas para un referéndum sobre la monarquía."],
+    ['q27', 1, 'v', null, "Defiende que los jueces elijan a los vocales judiciales del CGPJ (proposiciones de ley en el Congreso)."],
+    ['q30', -0.5, 'p', 47, "Exigir el consentimiento de los padres para el aborto de menores."],
+  ],
+  vox: [
+    ['q01', -1, 'p', 75, "IRPF con tipo único reducido del 15 % hasta 70.000 € y presupuestos de base cero."],
+    ['q02', -1, 'p', 77, "Suprimir el Impuesto sobre el Patrimonio."],
+    ['q03', 1, 'p', 74, "Eliminación progresiva del déficit y de la deuda pública."],
+    ['q04', -1, 'v', null, "Votó la enmienda a la totalidad que tumbó la reducción de la jornada a 37,5 horas (septiembre de 2025)."],
+    ['q05', -1, 'p', 43, "Derogar la Ley por el derecho a la vivienda."],
+    ['q06', 1, 'p', 40, "«Liberaremos todo el suelo que no esté o deba estar especialmente protegido»."],
+    ['q07', -1, 'p', 57, "Reforzar los conciertos con la sanidad privada para reducir listas de espera."],
+    ['q09', -1, 'p', 10, "Suprimir cuotas de género y planes de igualdad obligatorios."],
+    ['q10', -1, 'p', 58, "Derogar las leyes de eutanasia y del aborto."],
+    ['q11', -1, 'p', 11, "Derogar la Ley trans."],
+    ['q12', 1, 'p', 100, "«Inmediata expulsión de todos los inmigrantes que accedan ilegalmente»."],
+    ['q13', -1, 'p', 103, "Suprimir el arraigo como forma de regularizar la inmigración ilegal."],
+    ['q14', 1, 'p', 174, "Aumentar las penas, incluida la prisión permanente, y bajar la edad penal."],
+    ['q15', 1, 'p', 117, "Extender la vida útil de las centrales nucleares y nuevos minirreactores."],
+    ['q16', -1, 'p', 119, "Suprimir el mercado europeo de emisiones de CO2."],
+    ['q17', -1, 'p', 8, "Estado unitario y devolución inmediata al Estado de Educación, Sanidad, Seguridad y Justicia."],
+    ['q18', -1, 'p', 16, "Reintroducir el delito de referéndum ilegal."],
+    ['q19', -1, 'p', 134, "Rechaza «cualquier tendencia federalista» de la UE; nuevo tratado que devuelva poder a los Estados."],
+    ['q20', 0.5, 'p', 93, "«Aumentaremos la inversión en Defensa»."],
+    ['q23', 1, 'p', 77, "Suprimir el Impuesto sobre Sucesiones y Donaciones en todo el territorio."],
+    ['q24', -1, 'p', 33, "Garantizar el derecho a ser educado en español en todo el territorio."],
+    ['q25', -1, 'v', null, "Votó en contra de la reforma del Reglamento del Congreso que permite usar las lenguas cooficiales (2023)."],
+    ['q26', -1, 'v', null, "Ha votado en contra de las iniciativas para un referéndum sobre la monarquía."],
+    ['q27', 1, 'p', 127, "«Los jueces deben elegir a los jueces»: todos los vocales del CGPJ propuestos por jueces y magistrados."],
+    ['q29', -1, 'p', 111, "Más control de usos del suelo antes de instalar macroproyectos renovables; proteger el suelo."],
+    ['q30', -1, 'p', 58, "Derogar la ley del aborto."],
+  ],
+  sumar: [
+    ['q01', 1, 'p', 15, "Reforma fiscal para mejorar la progresividad y acercar los ingresos públicos a la media europea."],
+    ['q02', 1, 'p', 16, "Impuesto permanente a las grandes fortunas con tipos de al menos el 4 % para los mayores patrimonios."],
+    ['q03', -1, 'p', 18, "Reformar la Ley de Estabilidad Presupuestaria, «diseñada para institucionalizar la austeridad»."],
+    ['q04', 1, 'p', 7, "Jornada máxima de 37,5 horas por ley en 2024 y diálogo para llegar a 32 horas, sin reducción de salario."],
+    ['q05', 1, 'p', 9, "Precios de referencia del alquiler en zonas tensionadas."],
+    ['q06', -1, 'p', 11, "Un parque «amplio y profundo» de vivienda pública o protegida."],
+    ['q07', 1, 'p', 91, "Revertir las «oleadas de privatización» de la sanidad pública."],
+    ['q08', -1, 'p', 155, "Reforzar la educación pública y la regulación pública de la red concertada."],
+    ['q09', 1, 'p', 114, "Planes de igualdad y medidas de igualdad sustantiva."],
+    ['q10', 1, 'p', 101, "Muerte digna «en coherencia con [...] la Ley de Regulación de la Eutanasia»."],
+    ['q11', 1, 'p', 110, "Defensa de los derechos de las personas trans dentro de su programa feminista."],
+    ['q12', -1, 'p', 150, "Tipificar como delito la devolución sumaria en frontera y cerrar los CIE."],
+    ['q13', 1, 'v', null, "Impulsó y votó a favor de la ILP de regularización extraordinaria (2024)."],
+    ['q14', -0.5, 'p', 132, "Frente al «punitivismo mágico», prevención y convivencia."],
+    ['q15', -1, 'v', null, "Se opone a prorrogar las nucleares más allá del calendario de cierre (2025)."],
+    ['q16', 1, 'p', 40, "Aumentar la ambición de la Ley de Cambio Climático: -55 % de emisiones en 2030."],
+    ['q17', 1, 'p', 18, "Potenciar la capacidad de autogobierno de comunidades y municipios."],
+    ['q18', 0, 'p', 124, "Propone que la ciudadanía de Cataluña vote el acuerdo entre la Generalitat y el Gobierno, no un referéndum de independencia."],
+    ['q19', 0.5, 'p', 19, "«Hacer de Europa un motor del cambio»: más capacidad fiscal y autonomía estratégica europea."],
+    ['q20', -1, 'p', 141, "Desplazar las garantías de seguridad de la OTAN hacia una autonomía europea «no al servicio de la industria armamentística»."],
+    ['q22', 0.5, 'p', 15, "Herencia universal de 20.000 € y prestación por crianza."],
+    ['q23', -1, 'p', 16, "Un mínimo estatal en sucesiones que las comunidades no puedan rebajar."],
+    ['q25', 1, 'p', 123, "Extender el uso de las lenguas cooficiales al conjunto de las instituciones del Estado y a la UE."],
+    ['q30', 0.5, 'p', 113, "Garantizar el acceso efectivo al aborto en la sanidad pública de todo el territorio."],
+  ],
+  podemos: [
+    ['q01', 1, 'p', 15, "Programa de Sumar 2023: reforma fiscal para mejorar la progresividad."],
+    ['q02', 1, 'p', 16, "Programa de Sumar 2023: impuesto permanente a las grandes fortunas."],
+    ['q03', -1, 'p', 18, "Programa de Sumar 2023: reformar la Ley de Estabilidad Presupuestaria."],
+    ['q04', 1, 'p', 7, "Programa de Sumar 2023: 37,5 horas en 2024 y camino a 32 sin bajar salario."],
+    ['q05', 1, 'p', 9, "Programa de Sumar 2023: precios de referencia en zonas tensionadas."],
+    ['q06', -1, 'p', 11, "Programa de Sumar 2023: amplio parque de vivienda pública."],
+    ['q07', 1, 'p', 91, "Programa de Sumar 2023: revertir la privatización sanitaria."],
+    ['q08', -1, 'p', 155, "Programa de Sumar 2023: reforzar la escuela pública y regular la concertada."],
+    ['q09', 1, 'p', 114, "Programa de Sumar 2023: planes de igualdad."],
+    ['q10', 1, 'p', 101, "Programa de Sumar 2023: defensa de la Ley de Eutanasia."],
+    ['q11', 1, 'p', 110, "Programa de Sumar 2023: defensa de los derechos de las personas trans; la Ley trans la impulsó el Ministerio de Igualdad de Podemos."],
+    ['q12', -1, 'p', 150, "Programa de Sumar 2023: tipificar la devolución sumaria y cerrar los CIE."],
+    ['q13', 1, 'v', null, "Votó a favor de la ILP de regularización extraordinaria (2024)."],
+    ['q14', -0.5, 'p', 132, "Programa de Sumar 2023: frente al «punitivismo», prevención."],
+    ['q15', -1, 'v', null, "Se opone a prorrogar las centrales nucleares."],
+    ['q16', 1, 'p', 40, "Programa de Sumar 2023: -55 % de emisiones en 2030."],
+    ['q17', 1, 'p', 18, "Programa de Sumar 2023: más autogobierno."],
+    ['q18', 1, 'v', null, "Defiende un referéndum pactado en Cataluña."],
+    ['q19', 0.5, 'p', 19, "Programa de Sumar 2023: más capacidad fiscal y autonomía estratégica de la UE."],
+    ['q20', -1, 'v', null, "Ha votado en contra de los aumentos del gasto militar y rechaza el objetivo de la OTAN."],
+    ['q22', 0.5, 'p', 15, "Programa de Sumar 2023: herencia universal y prestación por crianza."],
+    ['q23', -1, 'p', 16, "Programa de Sumar 2023: mínimo estatal en sucesiones."],
+    ['q25', 1, 'p', 123, "Programa de Sumar 2023: lenguas cooficiales en las instituciones del Estado."],
+    ['q26', 1, 'v', null, "Defiende un referéndum sobre monarquía o república."],
+    ['q30', 0.5, 'p', 113, "Programa de Sumar 2023: garantizar el acceso al aborto en la sanidad pública."],
+  ],
+  erc: [
+    ['q01', 1, 'p', 54, "Impuestos a las grandes fortunas y «evitar retallades en les polítiques públiques»."],
+    ['q02', 1, 'p', 54, "«Cal crear impostos sobre les grans fortunes»."],
+    ['q03', -1, 'p', 54, "Rechaza los recortes del gasto público."],
+    ['q04', 1, 'p', 53, "Implantar la semana laboral de cuatro días."],
+    ['q05', 1, 'p', 52, "«Defensar la limitació i impulsar la reducció dels preus del lloguer»."],
+    ['q06', -1, 'p', 114, "Crear un gran parque de vivienda pública."],
+    ['q09', 1, 'v', null, "Votó a favor de la Ley de paridad (2024)."],
+    ['q10', 1, 'v', null, "Votó a favor de la Ley de Eutanasia (2021)."],
+    ['q11', 1, 'p', 50, "Defiende la ley trans y el «dret a l'autodeterminació de gènere»."],
+    ['q12', -1, 'p', 36, "Critica la directiva europea de retorno y los CIE."],
+    ['q13', 1, 'v', null, "Votó a favor de la ILP de regularización extraordinaria (2024)."],
+    ['q16', 0.5, 'p', 97, "Asume el objetivo europeo de -55 % de emisiones en 2030 y critica su aplicación."],
+    ['q17', 1, 'p', 7, "Defiende ampliar el autogobierno hacia la independencia de Cataluña."],
+    ['q18', 1, 'p', 7, "«La millor manera d'arribar-hi [a la independència] és amb un referèndum»."],
+    ['q19', 0.5, 'p', 12, "La UE como «projecte en construcció»; pide la oficialidad del catalán en la UE."],
+    ['q20', -1, 'p', 28, "Critica el gasto militar, que ya supera el objetivo de la OTAN."],
+    ['q21', -1, 'p', 95, "Propone rebajar la edad de jubilación."],
+    ['q22', 1, 'p', 58, "Renta básica de ámbito europeo."],
+    ['q23', -1, 'p', 55, "Critica las bonificaciones de patrimonio y sucesiones a las grandes fortunas."],
+    ['q24', 1, 'p', 120, "Preservar la inmersión lingüística con el catalán como lengua vehicular."],
+    ['q25', 1, 'p', 121, "Reformar el Reglamento del Congreso para usar catalán, euskera, gallego y otras lenguas."],
+    ['q26', 1, 'p', 9, "«Monarquia o república»: defiende la república frente al «règim monàrquic del 78»."],
+    ['q30', 1, 'p', 44, "Garantizar la aplicación efectiva de la ley del aborto (LO 1/2023)."],
+  ],
+  junts: [
+    ['q01', -0.5, 'p', 56, "Ajustes fiscales «sense incrementar la pressió fiscal» y deflactar los impuestos."],
+    ['q04', -1, 'v', null, "Votó la enmienda a la totalidad que tumbó la reducción de la jornada a 37,5 horas (septiembre de 2025)."],
+    ['q08', 0.5, 'p', 114, "Las redes pública y concertada necesitan los mismos recursos."],
+    ['q10', 1, 'v', null, "Votó a favor de la Ley de Eutanasia (2021)."],
+    ['q12', 0.5, 'v', null, "Reclama para Cataluña las competencias de inmigración y un control más estricto (2024–2025)."],
+    ['q14', 1, 'p', 126, "Modificar el Código Penal contra la multirreincidencia en los hurtos."],
+    ['q15', 0.5, 'v', null, "Ha apoyado prorrogar las centrales nucleares de Ascó y Vandellòs (2025)."],
+    ['q16', 0.5, 'p', 52, "Transición energética basada en renovables y sin emisiones."],
+    ['q17', 1, 'p', 34, "La Generalitat debe tener «més recursos i més competències»."],
+    ['q18', 1, 'p', 11, "Reconocimiento del derecho de Cataluña a la autodeterminación."],
+    ['q19', 0.5, 'p', 27, "«Compartim els valors fundacionals de la Unió Europea»."],
+    ['q21', 0.5, 'p', 100, "Vincular cualquier retraso de la edad de jubilación al aumento de la esperanza de vida."],
+    ['q22', 0.5, 'p', 91, "Que la Generalitat gestione el IMV junto con la Renta Garantizada."],
+    ['q24', 1, 'p', 113, "Defensa de la inmersión lingüística y del modelo de escuela catalana."],
+    ['q25', 1, 'p', 122, "Uso del catalán en la Justicia y el BOE en todas las lenguas oficiales."],
+  ],
+  bildu: [
+    ['q01', 1, 'p', 8, "«Aumentar la carga impositiva» y rechazar la austeridad que conlleve recortes de servicios públicos."],
+    ['q02', 1, 'p', 8, "Hacer permanente el impuesto a las grandes fortunas."],
+    ['q03', -1, 'p', 8, "Rechaza las reglas fiscales de contención y propone derogar la reforma del artículo 135."],
+    ['q04', 1, 'p', 3, "Jornada de 32 horas semanales sin reducción salarial."],
+    ['q05', 1, 'p', 4, "Prórroga automática de los alquileres con la misma renta."],
+    ['q07', 1, 'p', 6, "Derogar la Ley 15/1997, que «permite la privatización y externalización» sanitaria."],
+    ['q10', 1, 'v', null, "Votó a favor de la Ley de Eutanasia (2021)."],
+    ['q11', 1, 'p', 10, "Defender «todos y cada uno de los avances» para las personas LGTBIQ+."],
+    ['q12', -1, 'p', 11, "Derogar la Ley de Extranjería y acabar con las devoluciones en caliente."],
+    ['q13', 1, 'v', null, "Votó a favor de la ILP de regularización extraordinaria (2024)."],
+    ['q15', -1, 'v', null, "Se opone a prorrogar las centrales nucleares."],
+    ['q16', 1, 'p', 9, "Ampliar los objetivos de reducción de emisiones para alcanzar la neutralidad climática en 2040."],
+    ['q17', 1, 'p', 15, "Transferir todas las competencias pendientes y ensanchar el autogobierno."],
+    ['q18', 1, 'p', 14, "Reconocer el derecho a decidir de la ciudadanía vasca."],
+    ['q20', -1, 'v', null, "Ha votado en contra del aumento del gasto militar."],
+    ['q21', -1, 'p', 5, "«Rechazo a cualquier aumento de la edad de jubilación»."],
+    ['q22', 1, 'p', 7, "Ampliar el Ingreso Mínimo Vital y aumentar sus cuantías al menos un 12 %."],
+    ['q24', 1, 'p', 15, "Blindar los modelos educativos propios y sus características lingüísticas."],
+    ['q25', 1, 'p', 15, "Garantizar el uso del euskera en todas las administraciones del Estado."],
+    ['q26', 1, 'v', null, "Ha impulsado iniciativas para un referéndum sobre la monarquía."],
+    ['q29', 0.5, 'p', 9, "Más renovables con una planificación «respetuosa con las particularidades [...] de cada territorio»."],
+    ['q30', 1, 'p', 10, "Defender los avances feministas y «el derecho a decidir sobre nuestros cuerpos»."],
+  ],
+  pnv: [
+    ['q03', 0, 'p', 17, "Ajuste fiscal europeo compatible con la inversión en transición ecológica y digital."],
+    ['q06', -0.5, 'p', 45, "Fomentar el alquiler y una promoción de vivienda pública suficiente."],
+    ['q09', 0.5, 'p', 8, "Que «la paridad e igualdad entre mujeres y hombres sea real y efectiva»."],
+    ['q10', 1, 'v', null, "Votó a favor de la Ley de Eutanasia (2021)."],
+    ['q11', 0.5, 'p', 27, "Defensa de todos los derechos LGTBI y seguimiento del cumplimiento de la legislación aprobada."],
+    ['q13', 0.5, 'p', 34, "Que las personas migrantes con contrato de trabajo no tengan que pasar por el arraigo."],
+    ['q14', -0.5, 'p', 10, "Rechaza la prisión permanente revisable."],
+    ['q16', 0.5, 'p', 19, "Transición energética con renovables, eficiencia y electrificación."],
+    ['q17', 1, 'p', 5, "«Más autogobierno significa más bienestar»."],
+    ['q18', 0.5, 'p', 3, "Plantea «el derecho a decidir nuestro futuro», sin concretar un referéndum."],
+    ['q19', 1, 'p', 5, "«Más Europa»."],
+    ['q22', 1, 'p', 5, "Defiende la Renta de Garantía de Ingresos vasca, que «ha inspirado el IMV»."],
+    ['q25', 1, 'p', 8, "Pleno uso de las lenguas cooficiales en todos los ámbitos de la Administración del Estado."],
+    ['q29', 0.5, 'p', 20, "Acelerar la implantación de renovables agilizando su tramitación."],
+    ['q30', 1, 'v', null, "Votó a favor de la reforma de la ley del aborto (2023)."],
+  ],
+  bng: [
+    ['q01', 1, 'p', 14, "Elevar el gasto en protección social al menos a la media de la UE, financiado con impuestos a la banca, las energéticas y las grandes fortunas."],
+    ['q02', 1, 'p', 5, "Defiende los impuestos a las grandes fortunas."],
+    ['q04', 1, 'p', 16, "Jornada laboral de 35 horas semanales sin reducción salarial."],
+    ['q06', -1, 'p', 15, "Ampliar el parque público de vivienda con los inmuebles de la SAREB."],
+    ['q08', -1, 'p', 32, "«Unha única rede de ensino, a pública»."],
+    ['q10', 1, 'v', null, "Votó a favor de la Ley de Eutanasia (2021)."],
+    ['q11', 1, 'p', 25, "Consolidar y ampliar los avances legislativos para las personas LGBT."],
+    ['q12', -1, 'p', 20, "Cierre de los CIE y fin de las deportaciones."],
+    ['q13', 1, 'p', 20, "Regularización administrativa de las personas migrantes."],
+    ['q14', -0.5, 'p', 27, "Derogar la prisión permanente revisable."],
+    ['q17', 1, 'p', 11, "Transferir a Galicia competencias como la Seguridad Social y las relaciones laborales."],
+    ['q18', 1, 'p', 10, "Derecho de autodeterminación de Galicia y posibilidad de ejercerlo."],
+    ['q20', -1, 'p', 6, "Abandonar «a escalada belicista e o incremento desmedido do gasto militar»."],
+    ['q21', -1, 'p', 18, "Jubilación ordinaria a los 65 años."],
+    ['q22', 1, 'p', 11, "Una renta social básica para toda la población gallega."],
+    ['q24', 1, 'p', 32, "«Un ensino público, galego, laico [...]» con competencias plenas para Galicia."],
+    ['q25', 1, 'p', 6, "Normalizar el gallego en los ámbitos dependientes de la Administración del Estado."],
+    ['q26', 1, 'p', 10, "Defiende la República da Galiza y critica la monarquía."],
+    ['q29', -0.5, 'p', 5, "Combate el «espolio eólico» y la regulación que lo facilita."],
+    ['q30', 1, 'v', null, "Votó a favor de la reforma de la ley del aborto (2023)."],
+  ],
+  cc: [
+    ['q09', 0.5, 'p', 9, "Más legislación, políticas y recursos para la igualdad en educación, sanidad, vivienda y otros ámbitos."],
+    ['q13', 0.5, 'v', null, "Votó a favor de tramitar la ILP de regularización extraordinaria (abril de 2024)."],
+    ['q16', 0, 'p', 12, "Acelerar la transición energética en Canarias, pero pide no aplicar a las islas la nueva tasa de emisiones de los vuelos."],
+    ['q17', 1, 'p', 3, "Canarias «con el máximo nivel de autogobierno» dentro de un «estado plurinacional» consensuado."],
+  ],
+  upn: [
+    ['q01', -0.5, 'p', 11, "Bajar el IRPF, el Impuesto sobre Sociedades y suprimir Patrimonio en Navarra."],
+    ['q02', -1, 'p', 11, "Que los navarros no paguen el Impuesto sobre el Patrimonio."],
+    ['q04', -1, 'v', null, "Votó la enmienda a la totalidad que tumbó la reducción de la jornada a 37,5 horas (septiembre de 2025)."],
+    ['q05', -1, 'p', 17, "Quitar los topes al precio del alquiler, «porque estas leyes no ayudan»."],
+    ['q06', 0.5, 'p', 17, "Construir más vivienda protegida y reactivar grandes desarrollos urbanísticos."],
+    ['q08', 1, 'p', 15, "Oferta equilibrada de centros públicos y concertados para que las familias elijan."],
+    ['q10', -1, 'v', null, "Votó en contra de la Ley de Eutanasia (2021)."],
+    ['q16', 0.5, 'p', 23, "Que Navarra sea un ejemplo en renovables, transición energética y reducción de la huella de carbono."],
+    ['q17', 0.5, 'p', 20, "Negociar con el Gobierno de España los traspasos pendientes de la LORAFNA."],
+    ['q18', -1, 'v', null, "Vota en contra de las iniciativas sobre referéndums de autodeterminación."],
+    ['q22', 0.5, 'p', 16, "Renta garantizada para quien no tenga ingresos suficientes, con obligación de buscar empleo."],
+    ['q23', 0.5, 'p', 11, "Reducir el Impuesto sobre Sucesiones y Donaciones entre padres e hijos."],
+    ['q25', -1, 'v', null, "Votó en contra de la reforma del Reglamento del Congreso que permite usar las lenguas cooficiales (2023)."],
+    ['q26', -1, 'v', null, "Vota en contra de las iniciativas para un referéndum sobre la monarquía."],
+    ['q30', -1, 'v', null, "Votó en contra de la reforma de la ley del aborto (2023)."],
+  ],
+};
+
+const page = (n: number | null) => (n === null ? undefined : `p. ${n} del PDF`);
+
+export const realPositions: Position[] = Object.entries(ROWS).flatMap(([party, rows]) =>
+  rows.map(([question, value, kind, n, note]): Position => ({
+    party, question, value,
+    confidence: kind === 'p' ? 1 : SCORING.maxEstimatedConfidence,
+    sourceId: kind === 'p' ? `${party}-programa-2023` : `${party}-congreso`,
+    note: n === null ? note : `${note} (${page(n)})`,
+    ...(kind === 'v' ? { estimated: true } : {}),
+    updatedAt: U,
+  })),
+);
 
 /**
- * Fuentes. Una por documento; cada Position.sourceId apunta a una de ellas.
- *
- * { id: 'psoe-programa-2026', party: 'psoe', type: 'programa',
- *   title: 'Programa electoral elecciones generales 2026', url: 'https://…', date: '2026-11-..' }
+ * Propuestas para el comparador: las mismas medidas del programa 2023 que justifican cada posición, con su página.
+ * Las de Podemos salen del programa de Sumar con el que concurrió.
  */
-export const realSources: Source[] = [];
-
-/**
- * Propuestas para el comparador, por área. Texto literal o resumen fiel del programa, con su fuente.
- *
- * { party: 'psoe', topic: 'vivienda', text: '…', sourceId: 'psoe-programa-2026', reference: 'p. 34' }
- */
-export const realProposals: Proposal[] = [];
+const topicOf = new Map(questions.map((q) => [q.id, q.topic]));
+export const realProposals: Proposal[] = Object.entries(ROWS).flatMap(([party, rows]) =>
+  rows.filter(([, , kind, n]) => kind === 'p' && n !== null).map(([question, , , n, note]): Proposal => ({
+    party, topic: topicOf.get(question)!, text: note.replace(/^Programa de Sumar 2023[:;] ?/, ''),
+    sourceId: `${party}-programa-2023`, reference: page(n),
+  })),
+);

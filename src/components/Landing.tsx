@@ -66,7 +66,8 @@ export function Landing() {
   const faces = candidates.filter((c) => !!c.name).slice(0, 6);
 
   return (
-    <main id="contenido" className="wrap wide">
+    <main id="contenido" className="front">
+      <div className="wrap wide">
       <section className="front-hero" aria-labelledby="h-hero">
         <div>
           <p className="kicker">{t('El test · {a} o {b} preguntas', { a: nRapido, b: nCompleto })}</p>
@@ -87,10 +88,12 @@ export function Landing() {
             <button className="mode primary" onClick={() => go('rapido')}>
               <span className="mode-n">{nRapido}</span>
               <span><strong>{t('Test rápido')}</strong><span className="muted">{t('Unos {n} minutos. Los temas que más diferencian a las candidaturas.', { n: Math.round(nRapido * 0.25) })}</span></span>
+              <span className="mode-cta">{t('Empezar')}<span className="arrow" aria-hidden="true">→</span></span>
             </button>
             <button className="mode" onClick={() => go('completo')}>
               <span className="mode-n">{nCompleto}</span>
               <span><strong>{t('Test completo')}</strong><span className="muted">{t('Unos {n} minutos. Añade pensiones, lengua, instituciones y campo, y marcas qué temas te importan más.', { n: Math.round(nCompleto * 0.3) })}</span></span>
+              <span className="mode-cta">{t('Empezar')}<span className="arrow" aria-hidden="true">→</span></span>
             </button>
           </div>
           <ul className="privacy-tags" aria-label={t('Cómo funciona el test')}>
@@ -105,9 +108,15 @@ export function Landing() {
       </section>
 
       <AdSlot slot="landing" />
+      </div>
 
-      <div className="front-label"><h2>{t('Antes de votar')}</h2></div>
-      <div className="modules">
+      <section className="band band-antes" aria-labelledby="h-antes">
+        <div className="wrap wide">
+          <header className="band-head">
+            <h2 id="h-antes">{t('Antes de votar')}</h2>
+            <p>{t('Candidatos, propuestas, pactos y fechas para llegar al 29N con todo claro.')}</p>
+          </header>
+          <div className="modules">
         <Module route="pactos" kicker={t('Calculadora de pactos')} title={t('¿Quién suma para gobernar?')} lead
           art={<Hemicycle title={t('Investidura de 2023: síes a la izquierda, noes a la derecha')} total={r2023.totalSeats} rows={10} showMajority groups={investidura} />}>
           {t('Elige qué vota cada partido en una investidura y comprueba si sale adelante. Arriba, la de 2023: 179 síes frente a 171 noes.')}
@@ -127,21 +136,32 @@ export function Landing() {
         <Module route="como-votar" kicker={t('Cómo votar')} title={t('Que tu voto cuente')}>
           {t('En persona, por correo o desde el extranjero, y cómo evitar el voto nulo.')}
         </Module>
-      </div>
+          </div>
+        </div>
+      </section>
 
-      <div className="front-label"><h2>{t('Explora el test')}</h2></div>
-      <div className="modules">
+      <section className="band band-explora" aria-labelledby="h-explora">
+        <div className="wrap wide">
+          <header className="band-head">
+            <h2 id="h-explora">{t('Explora el test')}</h2>
+            <p>{t('Las posiciones de cada candidatura, sin necesidad de responder.')}</p>
+          </header>
+          <div className="modules">
         <Module route="partidos" kicker={t('Partidos')} title={t('Qué defiende cada candidatura')}>{t('Sus posiciones, pregunta a pregunta y con su fuente.')}</Module>
         <Module route="temas" kicker={t('Temas')} title={t('Los {n} temas del test', { n: dataset.topics.length })}>{t('Dónde se sitúa cada candidatura en cada asunto.')}</Module>
         <Module route="brujula" kicker={t('Brújula')} title={t('La brújula política')}>{t('Las candidaturas en dos ejes: economía y valores sociales.')}</Module>
-      </div>
+          </div>
+        </div>
+      </section>
 
+      <div className="wrap wide front-foot">
       <section className="facts" aria-label={t('Cómo es el test')}>
         <div><strong>{t('Más que izquierda y derecha')}</strong><span className="muted">{t('Verás con quién coincides en cada área: puede no ser el mismo partido.')}</span></div>
         <div><strong>{t('Cada posición, con su fuente')}</strong><span className="muted">{t('Si una posición no está documentada, no se usa. Si es una estimación, se indica.')}</span></div>
         <div><strong>{t('Responde solo lo que tengas claro')}</strong><span className="muted">{t('Puedes saltarte cualquier pregunta: no cuenta para ninguna candidatura.')}</span></div>
       </section>
       {dataset.meta.mode === 'real' && <p className="note">{t(dataset.meta.notice)}</p>}
+      </div>
     </main>
   );
 }

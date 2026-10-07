@@ -29,6 +29,17 @@ export const electoralSources: ElectoralSource[] = [
     description: 'Plazos que se cuentan desde la convocatoria: censo, candidaturas, voto por correo, encuestas y escrutinio.',
   },
   {
+    id: 'boe-candidaturas-2023', tier: 1, entity: 'Boletín Oficial del Estado', date: '2023-06-27',
+    title: 'Candidaturas proclamadas para las elecciones al Congreso de los Diputados y al Senado convocadas por Real Decreto 400/2023',
+    url: 'https://www.boe.es/boe/dias/2023/06/27/pdfs/BOE-A-2023-15066.pdf',
+    description: 'BOE núm. 152. Fuente de quién encabezó cada lista en las generales de 2023.',
+  },
+  {
+    id: 'infobae-20261005', tier: 3, entity: 'Infobae (Europa Press)', date: '2026-10-05',
+    title: 'Coalición Canaria (CC) propone a Cristina Valido como candidata al Congreso',
+    url: 'https://www.infobae.com/espana/agencias/2026/10/05/coalicion-canaria-cc-propone-a-cristina-valido-como-candidata-al-congreso/',
+  },
+  {
     id: 'eldebate-20261005', tier: 3, entity: 'El Debate', date: '2026-10-05',
     title: '¿Quiénes podrían ser los candidatos en las elecciones generales del próximo 29N?',
     url: 'https://www.eldebate.com/espana/20261005/quienes-podrian-candidatos-elecciones-generales-proximo-29n_466293.html',

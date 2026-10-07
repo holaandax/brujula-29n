@@ -3,7 +3,7 @@
 ## Lo que falta (a 07/10/2026)
 1. **Lista oficial de candidaturas** — tras la proclamación (BOE, 03/11/2026). Actualizar `src/data/parties.ts`: `status`, `scope`, `circunscripciones`, coaliciones nuevas, altas y bajas.
 2. **Programas electorales 2026** — añadir `program: { title, url, date, verified: true }` a cada partido cuando se publiquen.
-3. **Posiciones** — 20 por candidatura en `src/data/positions.ts`, cada una con `sourceId`. Ninguna introducida.
+3. **Posiciones** — en `src/data/positions.ts` hay 241, tomadas de los programas de 2023 (tabla `ROWS`: pregunta, valor, `'p'` programa o `'v'` actuación en el Congreso, página, nota). Sustituirlas por las de 2026 cuando salgan los programas.
 4. **Verificar webs oficiales** — todas están en `verified: false`. Sumar, CC y UPN no tienen URL todavía.
 5. **URL del BOE** del Real Decreto de convocatoria en `src/data/electoral.ts` (`BOE_URL`).
 6. Dominio final en `config.ts`, `index.html`, `robots.txt`, `sitemap.xml`.
@@ -39,7 +39,7 @@ export const realPositions: Position[] = [
 | --- | --- | --- |
 | Calendario | `src/data/electoral.ts` | **Provisional** (`calendarProvisional: true`). Contrastar cada fecha con el BOE y la JEC, poner `false` y rellenar `BOE_URL`. `key: true` = aparece en la cuenta atrás de la portada. |
 | Calculadora de pactos | `src/data/results.ts` | Escaños oficiales de 2023. Para 2026, añadir otra entrada a `ELECTION_RESULTS` con los escaños proclamados; aparece un selector de elección automáticamente. `PACT_PRESETS` son votaciones reales de investidura. |
-| Propuestas por tema | `src/data/positions.ts` → `realProposals` | Vacío hasta que se publiquen los programas. Cada propuesta necesita `party`, `topic` (un id de `topics.ts`), `text` y `sourceId` de su programa; `reference` para la página. El validador falla si falta la fuente o es de otro partido. |
-| Candidatos | `src/data/candidates.ts` | **Provisional**: cabeza de lista en 2023 o líder actual. Fotos en `public/candidatos/<partido>.jpg` (4:5, ~600×750, solo con licencia que permita su uso) y `photo: '/candidatos/<partido>.jpg'`. Sin `url`, se enlaza la web oficial del partido. |
+| Propuestas por tema | `src/data/positions.ts` → `realProposals` | Se generan de las filas `'p'` de `ROWS` (programas 2023), con su página. Cada propuesta necesita `party`, `topic`, `text` y `sourceId` de su programa. El validador falla si falta la fuente o es de otro partido. |
+| Candidatos | `src/data/candidates.ts` | **Provisional**: solo nombres anunciados con fuente. `previous` = cabeza de lista en 2023 (BOE-A-2023-15066), que se muestra etiquetado «En 2023». Fotos en `public/candidatos/<apellido>.jpg` (4:5, 480×600, solo con licencia libre) con `photoCredit`. Sin `url`, se enlaza la web oficial del partido. |
 
 Los colores de cada partido están en `parties.ts` y `results.ts` (mismos valores) y solo se usan en gráficos y marcas pequeñas.

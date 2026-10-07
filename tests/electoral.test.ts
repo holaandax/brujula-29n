@@ -42,3 +42,21 @@ describe('integridad de datos electorales', () => {
     for (const r of ELECTION_RESULTS) expect(r.results.reduce((a, b) => a + b.seats, 0)).toBe(r.totalSeats);
   });
 });
+
+describe('fotos de candidatos', () => {
+  const pics = candidates.flatMap((c) => [c, ...(c.previous ? [c.previous] : [])]).filter((x) => x.photo);
+  const files = new Set(Object.keys(import.meta.glob('../public/candidatos/*.jpg')).map((k) => k.replace('../public', '')));
+
+  it('cada foto existe en public/ y tiene autor, licencia y enlace a Wikimedia Commons', () => {
+    expect(pics.length).toBeGreaterThanOrEqual(10);
+    for (const x of pics) {
+      expect(files.has(x.photo!), x.photo).toBe(true);
+      expect(x.photoCredit?.author && x.photoCredit.license, x.photo).toBeTruthy();
+      expect(x.photoCredit!.url).toMatch(/^https:\/\/commons\.wikimedia\.org\/wiki\/File:/);
+    }
+  });
+
+  it('la referencia de 2023 solo aparece cuando no hay candidato confirmado', () => {
+    for (const c of candidates.filter((x) => x.previous)) expect(c.status, c.party).toBe('pendiente');
+  });
+});
