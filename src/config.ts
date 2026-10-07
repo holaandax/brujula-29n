@@ -4,8 +4,8 @@ export const APP = {
   tagline: 'Test de afinidad política · Elecciones generales 2026',
   siteUrl: 'https://example.org',
   contactUrl: '',
-  /** 'demo' (candidaturas ficticias) o 'real'. Se puede forzar con VITE_DATASET. */
-  dataset: ((import.meta.env?.VITE_DATASET as string | undefined) ?? 'demo') as 'demo' | 'real',
+  /** 'real' (por defecto en producción) o 'demo' (candidaturas ficticias, solo para desarrollo). Se puede forzar con VITE_DATASET. */
+  dataset: ((import.meta.env?.VITE_DATASET as string | undefined) ?? 'real') as 'demo' | 'real',
   /** Selector de circunscripción: desactivado hasta que se publiquen las candidaturas proclamadas. */
   enableCircunscripcion: false,
 };

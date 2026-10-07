@@ -19,7 +19,7 @@ Por eso el proyecto trae **dos datasets**:
 - `demo` (por defecto): 5 candidaturas **ficticias** para que el producto funcione de extremo a extremo. La web muestra un aviso permanente.
 - `real`: formaciones con representación en la XV legislatura, estado *pendiente*, sin posiciones. Si lo activas hoy, la página de resultados explica que aún no hay posiciones verificadas en lugar de inventarlas.
 
-Detalle de lo que falta y cómo añadirlo: [`docs/DATOS.md`](docs/DATOS.md).
+Detalle de lo que falta y cómo añadirlo: [`docs/DATOS.md`](docs/DATOS.md). Estado verificado/pendiente: [`docs/ESTADO-DATOS.md`](docs/ESTADO-DATOS.md).
 
 ## Funcionalidades
 
