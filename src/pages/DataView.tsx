@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { dataset } from '../data';
 import { SOURCE_TYPE_LABEL } from '../lib/constants';
 import { valueLabel } from '../lib/labels';
+import { PageHead } from '../components/Layout';
 
 /** Tabla auditable: pregunta × candidatura, con valor, fuente y fecha. */
 export function DataView() {
@@ -9,7 +10,7 @@ export function DataView() {
   const p = dataset.parties.find((x) => x.id === party);
   return (
     <main id="contenido" className="wrap prose">
-      <h1>Datos utilizados</h1>
+      <PageHead kicker="Datos" title="Datos utilizados" />
       <p>Las mismas cifras que usa el cálculo. Valores de −1 (muy en desacuerdo, o la opción A) a +1 (muy de acuerdo, o la opción B). «No disponible» significa que no hay fuente y la pregunta no se usa para esa candidatura.</p>
       <label className="small muted" htmlFor="dv-party">Candidatura</label><br />
       <select id="dv-party" className="select" value={party} onChange={(e) => setParty(e.target.value)}>

@@ -1,5 +1,5 @@
 import { SCORING } from '../config';
-import type { Dataset, Position } from '../types';
+import type { Dataset, Position, Proposal } from '../types';
 
 export interface Issue { level: 'error' | 'warning'; code: string; message: string }
 
@@ -66,6 +66,8 @@ export function validateDataset(ds: Dataset): Issue[] {
     issues.push(...validatePosition(pos, partyIds, questionIds, sourceById));
   }
 
+  for (const pr of ds.proposals) issues.push(...validateProposal(pr, partyIds, topicIds, sourceById, ds.meta.mode));
+
   if (ds.meta.mode === 'real') {
     for (const p of ds.parties) {
       const n = ds.positions.filter((x) => x.party === p.id && x.value !== null).length;
@@ -73,6 +75,28 @@ export function validateDataset(ds: Dataset): Issue[] {
     }
   }
   return issues;
+}
+
+function validateProposal(
+  pr: Proposal,
+  partyIds: Set<string>,
+  topicIds: Set<string>,
+  sourceById: Map<string, { party: string; type: string }>,
+  mode: Dataset['meta']['mode'],
+): Issue[] {
+  const out: Issue[] = [];
+  const key = `${pr.party}:${pr.topic}`;
+  if (!partyIds.has(pr.party)) out.push({ level: 'error', code: 'proposal.party', message: `${key}: partido inexistente` });
+  if (!topicIds.has(pr.topic)) out.push({ level: 'error', code: 'proposal.topic', message: `${key}: área inexistente` });
+  if (!pr.text.trim()) out.push({ level: 'error', code: 'proposal.text', message: `${key}: propuesta sin texto` });
+  if (!pr.sourceId) {
+    if (mode === 'real') out.push({ level: 'error', code: 'proposal.noSource', message: `${key}: propuesta sin fuente` });
+  } else {
+    const src = sourceById.get(pr.sourceId);
+    if (!src) out.push({ level: 'error', code: 'proposal.sourceMissing', message: `${key}: fuente inexistente ${pr.sourceId}` });
+    else if (src.party !== pr.party) out.push({ level: 'error', code: 'proposal.sourceParty', message: `${key}: la fuente ${pr.sourceId} es de otro partido` });
+  }
+  return out;
 }
 
 function validatePosition(
@@ -125,7 +149,10 @@ export function sanitizeDataset(ds: Dataset): { dataset: Dataset; issues: Issue[
     return validatePosition(pos, partyIds, questionIds, sourceById).every((x) => x.level !== 'error');
   });
 
+  const proposals = ds.proposals.filter((pr) =>
+    validateProposal(pr, partyIds, topicIds, sourceById, ds.meta.mode).every((x) => x.level !== 'error'));
+
   const errors = issues.filter((i) => i.level === 'error');
   if (errors.length && typeof console !== 'undefined') console.warn('[dataset] entradas descartadas:', errors);
-  return { dataset: { ...ds, questions, parties, positions }, issues };
+  return { dataset: { ...ds, questions, parties, positions, proposals }, issues };
 }

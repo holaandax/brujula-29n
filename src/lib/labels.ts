@@ -25,3 +25,9 @@ export function agreementLabel(sim: number): string {
 export function pct(n: number, digits = 0): string {
   return `${n.toLocaleString('es-ES', { minimumFractionDigits: digits, maximumFractionDigits: digits })}%`;
 }
+
+/** Inicial del nombre y del último apellido: «Alberto Núñez Feijóo» → «AF». */
+export const initials = (name: string) => {
+  const w = name.split(/\s+/).filter((x) => /^[A-ZÁÉÍÓÚÑ]/.test(x));
+  return w.length > 1 ? `${w[0]![0]}${w.at(-1)![0]}` : (w[0]?.[0] ?? '');
+};

@@ -19,6 +19,7 @@ function mini(positions: Record<string, (number | null)[]>, weights = [1, 1, 1, 
     })),
     parties: parties.map((id) => ({ id, name: id.toUpperCase(), shortName: id, acronym: id, description: '', scope: 'estatal', circunscripciones: 'all', status: 'ficticia', color: '#000', updatedAt: U })),
     sources: parties.map((id) => ({ id: `${id}-s`, party: id, type: 'demo', title: 'x' })),
+    proposals: [],
     positions: Object.entries(positions).flatMap(([party, vals]) =>
       vals.map((value, i) => ({ party, question: `t${i}`, value, confidence: 1, sourceId: value === null ? undefined : `${party}-s`, updatedAt: U }))),
   };

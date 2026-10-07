@@ -1,6 +1,7 @@
 import { SCORING } from '../config';
 import { dataset } from '../data';
 import { href } from '../lib/router';
+import { PageHead } from '../components/Layout';
 
 export function Methodology() {
   const n = dataset.questions.length;
@@ -8,7 +9,7 @@ export function Methodology() {
   const soc = dataset.questions.filter((q) => q.axis?.social).length;
   return (
     <main id="contenido" className="wrap narrow prose">
-      <h1>Cómo funciona el test</h1>
+      <PageHead kicker="Cómo funciona" title="Cómo funciona el test" />
       <p>El test compara tus respuestas con las posiciones documentadas de cada candidatura. No interpreta tu ideología ni recomienda nada: mide parecido, pregunta a pregunta.</p>
 
       <h2>1. Las preguntas</h2>

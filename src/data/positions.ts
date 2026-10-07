@@ -1,4 +1,4 @@
-import type { Position, Source } from '../types';
+import type { Position, Proposal, Source } from '../types';
 
 /**
  * POSICIONES REALES — VACÍO A PROPÓSITO.
@@ -21,3 +21,10 @@ export const realPositions: Position[] = [];
  *   title: 'Programa electoral elecciones generales 2026', url: 'https://…', date: '2026-11-..' }
  */
 export const realSources: Source[] = [];
+
+/**
+ * Propuestas para el comparador, por área. Texto literal o resumen fiel del programa, con su fuente.
+ *
+ * { party: 'psoe', topic: 'vivienda', text: '…', sourceId: 'psoe-programa-2026', reference: 'p. 34' }
+ */
+export const realProposals: Proposal[] = [];

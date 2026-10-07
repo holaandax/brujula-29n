@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { dataset } from '../data';
-import { LIKERT } from '../lib/constants';
+import { LIKERT, PRIVACY_LINE, PRIVACY_TAGS } from '../lib/constants';
 import { navigate } from '../lib/router';
 import { useQuiz } from '../state/quiz';
 import type { AnswerValue, Question } from '../types';
@@ -67,9 +67,10 @@ export function Quiz() {
   return (
     <main id="contenido" className="wrap narrow">
       <div className="quiz-top">
-        <strong>Pregunta {index + 1} de {total}<span className="muted" style={{ fontWeight: 400 }}>{mode === 'completo' ? ', test completo' : ', test rápido'}</span></strong>
-        <button className="btn ghost small" style={{ minHeight: 36, padding: '.2rem .6rem' }} onClick={() => { restart(); navigate('inicio'); }}>Reiniciar</button>
+        <span><strong>Pregunta {index + 1} de {total}</strong><span className="muted">{mode === 'completo' ? ' · test completo' : ' · test rápido'}</span></span>
+        <button className="btn ghost sm" onClick={() => { restart(); navigate('inicio'); }}>Reiniciar</button>
       </div>
+      {index === 0 && <p className="privacy-mini"><strong>{PRIVACY_TAGS.join(' · ')}.</strong> {PRIVACY_LINE}</p>}
       <ProgressBar value={index} total={total} />
 
       <article className="ballot q-enter" key={q.id} aria-labelledby="q-heading">

@@ -1,7 +1,9 @@
 import { dataset } from '../data';
 import { ELECTION, circunscripciones } from '../data/electoral';
 import { SOURCE_TYPE_LABEL } from '../lib/constants';
+import { href } from '../lib/router';
 import type { Party } from '../types';
+import { PageHead } from '../components/Layout';
 
 const STATUS: Record<Party['status'], string> = {
   proclamada: 'Candidatura proclamada', presentada: 'Candidatura presentada', pendiente: 'Pendiente de proclamación', ficticia: 'Ficticia (demostración)',
@@ -16,8 +18,7 @@ export function Sources() {
   const fmt = (d: string) => new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
   return (
     <main id="contenido" className="wrap narrow prose">
-      <h1>Fuentes y programas</h1>
-      <p>Para cada candidatura: estado, programa, web oficial y la fuente de cada área. {dataset.meta.notice}</p>
+      <PageHead kicker="Fuentes" title="Fuentes y programas" dek={`Para cada candidatura: estado, programa, web oficial y la fuente de cada área. ${dataset.meta.notice}`} />
 
       {dataset.parties.map((p) => {
         const pos = dataset.positions.filter((x) => x.party === p.id && x.value !== null);
@@ -57,7 +58,8 @@ export function Sources() {
 
       <h2 id="electoral">Datos electorales</h2>
       <p>{ELECTION.name} del {fmt(ELECTION.date)}: {ELECTION.chambers.join(' y ')}. Este test se centra en la afinidad general y en el Congreso; el Senado tiene un sistema de voto distinto y no se mezcla con este cálculo.</p>
-      <ul className="small">{ELECTION.calendar.map((c) => <li key={c.date}><strong>{fmt(c.date)}</strong>: {c.label}</li>)}</ul>
+      <ul className="small">{ELECTION.calendar.filter((c) => c.key).map((c) => <li key={c.label}><strong>{fmt(c.date)}{c.end ? ` – ${fmt(c.end)}` : ''}</strong>: {c.label}</li>)}</ul>
+      <p className="small"><a href={href('calendario')}>Calendario completo</a>{ELECTION.calendarProvisional ? ' (fechas provisionales)' : ''}</p>
       {ELECTION.BOE_URL && <p><a href={ELECTION.BOE_URL} target="_blank" rel="noopener noreferrer">Real Decreto de convocatoria (BOE)</a></p>}
     </main>
   );

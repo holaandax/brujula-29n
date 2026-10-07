@@ -115,6 +115,17 @@ export interface DatasetMeta {
   notice: string;
 }
 
+/** Propuesta literal de un programa, agrupada por área para el comparador. */
+export interface Proposal {
+  party: string;
+  topic: TopicId;
+  text: string;
+  /** Fuente (normalmente el programa electoral). Obligatoria en el dataset real. */
+  sourceId?: string;
+  /** Página o apartado del documento. */
+  reference?: string;
+}
+
 export interface Dataset {
   meta: DatasetMeta;
   topics: Topic[];
@@ -122,6 +133,7 @@ export interface Dataset {
   parties: Party[];
   positions: Position[];
   sources: Source[];
+  proposals: Proposal[];
 }
 
 export type QuizMode = 'rapido' | 'completo';

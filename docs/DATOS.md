@@ -32,3 +32,14 @@ export const realPositions: Position[] = [
 
 ## Activar el dataset real
 `VITE_DATASET=real` en el entorno de build. Mientras una candidatura no tenga posiciones sobre al menos el 50 % de las respuestas del usuario, no entra en el ranking y se lista como "sin datos suficientes".
+
+## Guía electoral: calendario, pactos, propuestas y candidatos
+
+| Qué | Archivo | Estado a 07/10/2026 |
+| --- | --- | --- |
+| Calendario | `src/data/electoral.ts` | **Provisional** (`calendarProvisional: true`). Contrastar cada fecha con el BOE y la JEC, poner `false` y rellenar `BOE_URL`. `key: true` = aparece en la cuenta atrás de la portada. |
+| Calculadora de pactos | `src/data/results.ts` | Escaños oficiales de 2023. Para 2026, añadir otra entrada a `ELECTION_RESULTS` con los escaños proclamados; aparece un selector de elección automáticamente. `PACT_PRESETS` son votaciones reales de investidura. |
+| Propuestas por tema | `src/data/positions.ts` → `realProposals` | Vacío hasta que se publiquen los programas. Cada propuesta necesita `party`, `topic` (un id de `topics.ts`), `text` y `sourceId` de su programa; `reference` para la página. El validador falla si falta la fuente o es de otro partido. |
+| Candidatos | `src/data/candidates.ts` | **Provisional**: cabeza de lista en 2023 o líder actual. Fotos en `public/candidatos/<partido>.jpg` (4:5, ~600×750, solo con licencia que permita su uso) y `photo: '/candidatos/<partido>.jpg'`. Sin `url`, se enlaza la web oficial del partido. |
+
+Los colores de cada partido están en `parties.ts` y `results.ts` (mismos valores) y solo se usan en gráficos y marcas pequeñas.
