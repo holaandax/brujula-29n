@@ -2,7 +2,8 @@
 
 export type TopicId =
   | 'economia' | 'vivienda' | 'servicios' | 'social' | 'inmigracion'
-  | 'seguridad' | 'medioambiente' | 'territorial' | 'europa' | 'exterior';
+  | 'seguridad' | 'medioambiente' | 'territorial' | 'europa' | 'exterior'
+  | 'pensiones' | 'lengua' | 'instituciones' | 'rural';
 
 export interface Topic {
   id: TopicId;
@@ -26,6 +27,8 @@ export interface Question {
   options?: { a: string; b: string };
   /** Peso de la pregunta. 1 = neutro. */
   weight: number;
+  /** 'rapido' = está en los dos modos; 'completo' = solo en el test completo. */
+  set: 'rapido' | 'completo';
   /**
    * Contribución al mapa ideológico simplificado. Signo con el que el acuerdo (+1)
    * desplaza el punto: econ +1 → derecha, social +1 → conservador/tradicional.
@@ -96,6 +99,11 @@ export interface Position {
   confidence: number;
   sourceId?: string;
   note?: string;
+  /**
+   * true si ningún documento enuncia la posición de forma explícita y se ha deducido
+   * (p. ej. de una votación). Se muestra con la etiqueta «estimada» y su confianza no puede superar 0,6.
+   */
+  estimated?: boolean;
   updatedAt: string;
 }
 
@@ -116,6 +124,11 @@ export interface Dataset {
   sources: Source[];
 }
 
+export type QuizMode = 'rapido' | 'completo';
+
 /** Respuesta del usuario: valor en [-1, 1] o 'skip' (prefiere no responder). */
 export type AnswerValue = number | 'skip';
 export type Answers = Record<string, AnswerValue>;
+
+/** Preguntas marcadas como importantes por el usuario (modo completo). */
+export type Importance = Record<string, boolean>;

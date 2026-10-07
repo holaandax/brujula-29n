@@ -14,7 +14,7 @@ function mini(positions: Record<string, (number | null)[]>, weights = [1, 1, 1, 
       { id: 'social', name: 'S', description: '', weight: 1 },
     ],
     questions: weights.map((w, i) => ({
-      id: `t${i}`, topic: i < 2 ? 'economia' : 'social', subtopic: `s${i}`, kind: 'likert', text: `Pregunta ${i}`, weight: w,
+      id: `t${i}`, topic: i < 2 ? 'economia' : 'social', subtopic: `s${i}`, kind: 'likert', set: 'rapido', text: `Pregunta ${i}`, weight: w,
       axis: i < 2 ? { econ: 1 } : { social: 1 },
     })),
     parties: parties.map((id) => ({ id, name: id.toUpperCase(), shortName: id, acronym: id, description: '', scope: 'estatal', circunscripciones: 'all', status: 'ficticia', color: '#000', updatedAt: U })),
@@ -135,6 +135,20 @@ describe('pesos', () => {
     d.positions.find((p) => p.question === 't1')!.confidence = 0.5;
     const s = computeResults(d, ans([1, -1, 'skip', 'skip'])).ranking[0]!.score;
     expect(s).toBeCloseTo((1 * 1 + 0.5 * 0) / 1.5 * 100, 10);
+  });
+});
+
+describe('importancia (test completo)', () => {
+  it('marcar una pregunta como importante duplica su peso', () => {
+    const d = mini({ a: [1, 1, 0, 0] });
+    const u = ans([1, -1, 'skip', 'skip']);
+    expect(computeResults(d, u).ranking[0]!.score).toBe(50);
+    expect(computeResults(d, u, SCORING, undefined, { t0: true }).ranking[0]!.score).toBeCloseTo(200 / 3, 10);
+  });
+  it('importancia en una pregunta sin respuesta no cambia nada', () => {
+    const d = mini({ a: [1, 1, 0, 0] });
+    const u = ans([1, -1, 'skip', 'skip']);
+    expect(computeResults(d, u, SCORING, undefined, { t3: true }).ranking[0]!.score).toBe(50);
   });
 });
 

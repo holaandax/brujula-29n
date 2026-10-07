@@ -16,13 +16,13 @@ export const demoParties: Party[] = [
   { id: 'demo-epsilon', name: 'Candidatura Épsilon (ficticia)', shortName: 'Épsilon', acronym: 'ÉPSILON', description: 'Perfil ficticio de ámbito autonómico, con datos incompletos para mostrar cómo se gestiona la cobertura.', color: '#A3793F', ...base, scope: 'autonomico', circunscripciones: ['08', '17', '25', '43'] },
 ];
 
-// Valores por pregunta q01…q20. null = no disponible.
+// Valores por pregunta q01…q30. null = no disponible.
 const table: Record<string, (number | null)[]> = {
-  'demo-alfa':    [1, 1, -0.5, 1, 1, -0.5, 1, -1, 1, 1, 1, -0.5, 1, -0.5, -1, 1, 0.5, 0.5, 0.5, -0.5],
-  'demo-beta':    [0.5, 0.5, 0, 0.5, 0.5, 0, 0.5, -0.5, 1, 1, 0.5, 0, 0.5, 0, 0, 1, 0.5, -0.5, 1, 0.5],
-  'demo-gamma':   [-0.5, -0.5, 0.5, -1, -1, 1, -0.5, 1, 0.5, 0.5, 0, 0.5, 0, 0.5, 1, 0.5, -0.5, -1, 1, 1],
-  'demo-delta':   [-1, -1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, 1],
-  'demo-epsilon': [0.5, 0.5, null, 0.5, 0.5, null, 0.5, null, 0.5, 1, null, 0, 0.5, 0, null, 0.5, 1, 1, 0.5, null],
+  'demo-alfa':    [1, 1, -0.5, 1, 1, -0.5, 1, -1, 1, 1, 1, -0.5, 1, -0.5, -1, 1, 0.5, 0.5, 0.5, -0.5, -1, 1, -1, 0.5, 1, 1, -1, 1, 0.5, 1],
+  'demo-beta':    [0.5, 0.5, 0, 0.5, 0.5, 0, 0.5, -0.5, 1, 1, 0.5, 0, 0.5, 0, 0, 1, 0.5, -0.5, 1, 0.5, -0.5, 1, -0.5, 0, 0.5, -0.5, -0.5, 0.5, 0.5, 1],
+  'demo-gamma':   [-0.5, -0.5, 0.5, -1, -1, 1, -0.5, 1, 0.5, 0.5, 0, 0.5, 0, 0.5, 1, 0.5, -0.5, -1, 1, 1, 0.5, 0, 0.5, -1, -0.5, -1, 1, -0.5, 1, 0.5],
+  'demo-delta':   [-1, -1, 1, -1, -1, 1, -1, 1, -1, -1, -1, 1, -1, 1, 1, -1, -1, -1, -1, 1, 1, -1, 1, -1, -1, -1, 1, 0, -0.5, -1],
+  'demo-epsilon': [0.5, 0.5, null, 0.5, 0.5, null, 0.5, null, 0.5, 1, null, 0, 0.5, 0, null, 0.5, 1, 1, 0.5, null, null, 0.5, null, 1, 1, null, -0.5, 1, 0, 0.5],
 };
 
 export const demoSources: Source[] = demoParties.map((p) => ({

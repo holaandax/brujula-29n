@@ -1,3 +1,4 @@
+import { SCORING } from '../config';
 import type { Dataset, Position } from '../types';
 
 export interface Issue { level: 'error' | 'warning'; code: string; message: string }
@@ -94,6 +95,8 @@ function validatePosition(
       else if (src.party !== pos.party) out.push({ level: 'error', code: 'position.sourceParty', message: `${key}: la fuente pertenece a otro partido` });
     }
   }
+  if (pos.estimated && pos.confidence > SCORING.maxEstimatedConfidence)
+    out.push({ level: 'error', code: 'position.estimatedConfidence', message: `${key}: posición estimada con confianza > ${SCORING.maxEstimatedConfidence}` });
   if (!Number.isFinite(pos.confidence) || pos.confidence <= 0 || pos.confidence > 1)
     out.push({ level: 'error', code: 'position.confidence', message: `${key}: confianza fuera de (0, 1]` });
   return out;

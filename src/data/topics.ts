@@ -12,4 +12,8 @@ export const topics: Topic[] = [
   { id: 'territorial', name: 'Modelo territorial', description: 'Autonomías, competencias y autodeterminación.', weight: 1 },
   { id: 'europa', name: 'Unión Europea', description: 'Integración y soberanía.', weight: 1 },
   { id: 'exterior', name: 'Exterior y defensa', description: 'OTAN y gasto militar.', weight: 1 },
+  { id: 'pensiones', name: 'Pensiones y bienestar', description: 'Jubilación, pensiones y renta mínima.', weight: 1 },
+  { id: 'lengua', name: 'Lengua e identidad', description: 'Lenguas cooficiales en la escuela y en las instituciones.', weight: 1 },
+  { id: 'instituciones', name: 'Instituciones', description: 'Jefatura del Estado y poder judicial.', weight: 1 },
+  { id: 'rural', name: 'Campo y mundo rural', description: 'Ayudas agrarias y uso del suelo.', weight: 1 },
 ];

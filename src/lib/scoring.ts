@@ -1,4 +1,4 @@
-import type { Answers, Dataset, Party, Question, TopicId } from '../types';
+import type { Answers, Dataset, Importance, Party, Question, TopicId } from '../types';
 import { SCORING } from '../config';
 
 /**
@@ -6,7 +6,7 @@ import { SCORING } from '../config';
  *
  * 1. Usuario y partidos en la misma escala [-1, 1] por pregunta.
  * 2. Similitud por pregunta: s = 1 - |u - p| / 2  ∈ [0, 1]   (distancia normalizada al máximo posible, 2).
- * 3. Peso efectivo: w = pesoPregunta × pesoÁrea × confianzaFuente.
+ * 3. Peso efectivo: w = pesoPregunta × pesoÁrea × confianzaFuente × importancia (1, o 2 si el usuario la marca).
  * 4. Afinidad = Σ(w·s) / Σ(w) sobre las preguntas que el usuario ha respondido Y para las que
  *    el partido tiene posición. Las posiciones null se excluyen (no se tratan como neutrales).
  * 5. Cobertura = preguntas usadas / preguntas respondidas. Por debajo de minCoverage, fuera del ranking.
@@ -87,7 +87,7 @@ function positionIndex(ds: Dataset) {
   return idx;
 }
 
-export function scoreParty(ds: Dataset, party: Party, user: Map<string, number>, opts: ScoringOptions = SCORING): PartyResult {
+export function scoreParty(ds: Dataset, party: Party, user: Map<string, number>, opts: ScoringOptions = SCORING, importance: Importance = {}): PartyResult {
   const idx = positionIndex(ds);
   const topicW = new Map(ds.topics.map((t) => [t.id, t.weight]));
   const qs: QuestionScore[] = [];
@@ -102,7 +102,8 @@ export function scoreParty(ds: Dataset, party: Party, user: Map<string, number>,
     t.answered++;
     const pos = idx.get(`${party.id}:${q.id}`);
     const pv = pos && pos.value !== null && Number.isFinite(pos.value) ? clamp(pos.value) : null;
-    const w = q.weight * (topicW.get(q.topic) ?? 1) * (pos?.confidence ?? 0);
+    const imp = importance[q.id] ? opts.importanceMultiplier : 1;
+    const w = q.weight * (topicW.get(q.topic) ?? 1) * (pos?.confidence ?? 0) * imp;
     if (pv === null || !(w > 0)) {
       qs.push({ questionId: q.id, user: u, party: null, sim: null, weight: 0 });
       continue;
@@ -153,10 +154,13 @@ export function mapCoordinates(ds: Dataset, values: (q: Question) => number | nu
   return { x: xs / xw, y: ys / yw };
 }
 
-export function computeResults(ds: Dataset, answers: Answers, opts: ScoringOptions = SCORING, partyFilter?: (p: Party) => boolean): Results {
+export function computeResults(
+  ds: Dataset, answers: Answers, opts: ScoringOptions = SCORING,
+  partyFilter?: (p: Party) => boolean, importance: Importance = {},
+): Results {
   const user = numericAnswers(ds, answers);
   const parties = partyFilter ? ds.parties.filter(partyFilter) : ds.parties;
-  const all = parties.map((p) => scoreParty(ds, p, user, opts)).sort(compareResults);
+  const all = parties.map((p) => scoreParty(ds, p, user, opts, importance)).sort(compareResults);
   const ranking = all.filter((r) => r.used > 0 && r.coverage >= opts.minCoverage);
   const excluded = all.filter((r) => !ranking.includes(r));
 

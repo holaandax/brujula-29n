@@ -30,7 +30,7 @@ export function DataView() {
                     <td><strong>{q.subtopic}</strong><br /><span className="muted small">{q.text}</span></td>
                     <td className="num">{v === null ? '—' : v.toLocaleString('es-ES')}</td>
                     <td>{valueLabel(q, v)}</td>
-                    <td className="small">{src ? <>{SOURCE_TYPE_LABEL[src.type]}{src.url ? <>: <a href={src.url} target="_blank" rel="noopener noreferrer">{src.title}</a></> : `: ${src.title}`}{src.reference ? ` (${src.reference})` : ''}{pos?.note ? `. ${pos.note}` : ''}</> : <span className="muted">Sin fuente</span>}</td>
+                    <td className="small">{src ? <>{SOURCE_TYPE_LABEL[src.type]}{src.url ? <>: <a href={src.url} target="_blank" rel="noopener noreferrer">{src.title}</a></> : `: ${src.title}`}{src.reference ? ` (${src.reference})` : ''}{pos?.note ? `. ${pos.note}` : ''}{pos?.estimated ? <span className="tag">estimada</span> : null}</> : <span className="muted">Sin fuente</span>}</td>
                     <td className="small">{pos ? new Date(pos.updatedAt).toLocaleDateString('es-ES') : '—'}</td>
                   </tr>
                 );
@@ -40,7 +40,7 @@ export function DataView() {
         </div>
       )}
       <h2>Pesos</h2>
-      <p>Peso de cada pregunta y de cada área: {[...new Set(dataset.questions.map((q) => q.weight))].join(', ')} y {[...new Set(dataset.topics.map((t) => t.weight))].join(', ')}. Confianza por tipo de fuente: programa electoral 1; web o documento oficial 0,9; propuesta o intervención oficial 0,7; fuente secundaria 0,5.</p>
+      <p>Peso de cada pregunta y de cada área: {[...new Set(dataset.questions.map((q) => q.weight))].join(', ')} y {[...new Set(dataset.topics.map((t) => t.weight))].join(', ')}. Confianza por tipo de fuente: programa electoral 1; web o documento oficial 0,9; propuesta o intervención oficial 0,7; fuente secundaria 0,5; posición estimada, como máximo 0,6. Las preguntas que marcas como importantes en el test completo cuentan el doble.</p>
     </main>
   );
 }

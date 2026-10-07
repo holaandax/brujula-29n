@@ -98,9 +98,9 @@ function TopicResults({ res }: { res: R }) {
     <section className="section" aria-labelledby="h-topics">
       <h2 id="h-topics">Tu afinidad por áreas</h2>
       <p className="lead">Tu resultado general puede no coincidir con el partido más cercano en cada área.</p>
-      {res.topicLeaders.map((t) => {
+      {res.topicLeaders.filter((t) => res.ranking[0]!.topics[t.topic].answered > 0).map((t) => {
         const isOpen = open === t.topic;
-        const qs = dataset.questions.filter((q) => q.topic === t.topic);
+        const qs = dataset.questions.filter((q) => q.topic === t.topic && res.ranking[0]!.questions.some((x) => x.questionId === q.id));
         const lead = t.leaders[0];
         return (
           <div className="acc" key={t.topic} data-open={isOpen}>
@@ -198,16 +198,16 @@ function InfluentialAnswers({ res }: { res: R }) {
 }
 
 export function Results() {
-  const { answers, answeredCount, restart, goto, circunscripcion } = useQuiz();
+  const { answers, importance, answeredCount, restart, goto, circunscripcion, mode, start } = useQuiz();
   const res = useMemo(() => computeResults(dataset, answers, SCORING, (p) =>
-    !circunscripcion || p.circunscripciones === 'all' || p.circunscripciones.includes(circunscripcion)), [answers, circunscripcion]);
+    !circunscripcion || p.circunscripciones === 'all' || p.circunscripciones.includes(circunscripcion), importance), [answers, circunscripcion, importance]);
 
   if (answeredCount < SCORING.minAnswers) {
     return (
       <main id="contenido" className="wrap narrow">
         <h1>Aún no hay resultado</h1>
         <p>Necesitas responder al menos {SCORING.minAnswers} preguntas. Las respuestas solo existen mientras la pestaña está abierta, así que al recargar la página se borran.</p>
-        <button className="btn primary big" onClick={() => { restart(); navigate('test'); }}>Empezar test</button>
+        <a className="btn primary big" href={href('inicio')}>Elegir test</a>
       </main>
     );
   }
@@ -253,6 +253,7 @@ export function Results() {
         <div className="row">
           <button className="btn primary" onClick={() => { restart(); navigate('test'); }}>Repetir el test</button>
           <button className="btn" onClick={() => { goto(0); navigate('test'); }}>Revisar mis respuestas</button>
+          {mode === 'rapido' && <button className="btn" onClick={() => { start('completo'); navigate('test'); }}>Hacer el test completo</button>}
         </div>
       </section>
     </main>

@@ -8,8 +8,9 @@ describe.each([['demo', demoDataset], ['real', realDataset]] as const)('dataset 
   it('no tiene errores de validación', () => {
     expect(issues.filter((i) => i.level === 'error')).toEqual([]);
   });
-  it('tiene 20 preguntas y todas las áreas cubiertas', () => {
-    expect(ds.questions).toHaveLength(20);
+  it('20 preguntas en el test rápido, 30 en el completo y todas las áreas cubiertas', () => {
+    expect(ds.questions.filter((q) => q.set === 'rapido')).toHaveLength(20);
+    expect(ds.questions).toHaveLength(30);
     for (const t of ds.topics) expect(ds.questions.some((q) => q.topic === t.id)).toBe(true);
   });
 });
@@ -37,6 +38,7 @@ describe('el validador detecta problemas', () => {
   it('categoría inexistente', () => { const d = broken(); (d.questions[0] as { topic: string }).topic = 'nada'; expect(codes(d)).toContain('question.topic'); });
   it('fuente ausente', () => { const d = broken(); delete d.positions[0]!.sourceId; expect(codes(d)).toContain('position.noSource'); });
   it('URL inválida', () => { const d = broken(); d.parties[0]!.website = { url: 'javascript:alert(1)', verified: true }; expect(codes(d)).toContain('party.url'); });
+  it('posición estimada con confianza alta', () => { const d = broken(); d.positions[0]!.estimated = true; expect(codes(d)).toContain('position.estimatedConfidence'); });
   it('null con fuente es válido (no se trata como error)', () => { const d = broken(); d.positions[0]!.value = null; expect(codes(d)).toEqual([]); });
   it('el saneado descarta posiciones inválidas sin romper', () => {
     const d = broken(); d.positions[0]!.value = 7;

@@ -19,6 +19,10 @@ export const SCORING = {
   minCoverage: 0.5,
   /** Por debajo de este porcentaje se usa un lenguaje más prudente. */
   lowAffinity: 60,
+  /** Multiplicador del peso de las preguntas que el usuario marca como importantes (test completo). */
+  importanceMultiplier: 2,
+  /** Confianza máxima de una posición estimada (sin documento que la enuncie). */
+  maxEstimatedConfidence: 0.6,
   /** Respuestas mínimas para calcular un resultado. */
   minAnswers: 5,
 };

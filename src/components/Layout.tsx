@@ -20,7 +20,12 @@ export function Header() {
       <header className="site-header">
         <div className="wrap">
           <a className="brand" href={href('inicio')}><Logo />{APP.name}</a>
-          <a className="header-link" href={href('metodologia')}>Cómo funciona</a>
+          <nav className="main-nav" aria-label="Principal">
+            <a href={href('partidos')}>Partidos</a>
+            <a href={href('temas')}>Temas</a>
+            <a href={href('brujula')}>Brújula</a>
+            <a href={href('metodologia')}>Cómo funciona</a>
+          </nav>
         </div>
       </header>
       {dataset.meta.mode === 'demo' && (
@@ -39,6 +44,9 @@ export function Footer() {
         <nav aria-label="Pie de página">
           <a href={href('metodologia')}>Cómo funciona</a>
           <a href={href('metodologia')}>Metodología</a>
+          <a href={href('partidos')}>Partidos</a>
+          <a href={href('temas')}>Temas</a>
+          <a href={href('brujula')}>Brújula política</a>
           <a href={href('fuentes')}>Fuentes</a>
           <a href={href('datos')}>Datos utilizados</a>
           <a href={href('privacidad')}>Privacidad</a>

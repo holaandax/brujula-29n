@@ -1,6 +1,6 @@
 # Brújula 29N — test de afinidad política (elecciones generales, 29 de noviembre de 2026)
 
-Web estática, 100% client-side: 20 preguntas, cálculo de afinidad multidimensional en el navegador,
+Web estática, 100% client-side: test rápido (20 preguntas) o completo (30, con «esto me importa»), cálculo de afinidad multidimensional en el navegador,
 sin backend, sin cookies, sin analítica y sin almacenar respuestas.
 
 ## Estado de los datos (léelo antes de publicar)
@@ -8,7 +8,7 @@ sin backend, sin cookies, sin analítica y sin almacenar respuestas.
 | Qué | Estado a 07/10/2026 |
 | --- | --- |
 | Infraestructura, algoritmo, UI, tests | Completos |
-| Preguntas (20) | Completas, revisadas por sesgo |
+| Preguntas (20 rápido + 10 completo, 14 áreas) | Completas, revisadas por sesgo |
 | Candidaturas oficiales 29N | **Pendientes**: el plazo de presentación acaba el 26/10 y la proclamación se publica en el BOE el 03/11 |
 | Programas electorales 2026 | **No publicados todavía** |
 | Posiciones reales con fuente | **0 introducidas** (no se ha inventado ninguna) |
@@ -20,6 +20,14 @@ Por eso el proyecto trae **dos datasets**:
 - `real`: formaciones con representación en la XV legislatura, estado *pendiente*, sin posiciones. Si lo activas hoy, la página de resultados explica que aún no hay posiciones verificadas en lugar de inventarlas.
 
 Detalle de lo que falta y cómo añadirlo: [`docs/DATOS.md`](docs/DATOS.md).
+
+## Funcionalidades
+
+- Test rápido (20) y completo (30). En el completo, cada pregunta se puede marcar como importante (peso ×2).
+- Resultado general, ranking, afinidad por área, «¿por qué coincides?», respuestas más influyentes, mapa, comparador y tarjeta para compartir.
+- Explorar sin hacer el test: **Partidos** (ficha con cada posición y su fuente), **Temas** (espectro de posiciones por pregunta) y **Brújula**.
+- Posiciones **documentadas** frente a **estimadas** (etiqueta visible y confianza máxima 0,6).
+- Fuentes, datos auditables, metodología y privacidad.
 
 ## Ejecutar
 

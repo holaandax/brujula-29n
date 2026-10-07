@@ -35,7 +35,7 @@ export function PartyComparison({ res }: { res: Results }) {
           <caption className="sr-only">Afinidad por área</caption>
           <thead><tr><th>Área</th>{cols.map((c) => <th key={c.party.id} className="num">{c.party.shortName}</th>)}</tr></thead>
           <tbody>
-            {dataset.topics.map((t) => (
+            {dataset.topics.filter((t) => ra.topics[t.id].answered > 0).map((t) => (
               <tr key={t.id}>
                 <td>{t.name}</td>
                 {cols.map((c) => {
@@ -59,13 +59,14 @@ export function PartyComparison({ res }: { res: Results }) {
             <tbody>
               {dataset.questions.map((q) => {
                 const u = ra.questions.find((x) => x.questionId === q.id);
+                if (!u) return null;
                 return (
                   <tr key={q.id}>
                     <td>{q.subtopic}</td>
                     <td>{u ? valueLabel(q, u.user) : 'Sin respuesta'}</td>
                     {cols.map((c) => {
                       const pos = dataset.positions.find((p) => p.party === c.party.id && p.question === q.id);
-                      return <td key={c.party.id}>{valueLabel(q, pos?.value ?? null)}</td>;
+                      return <td key={c.party.id}>{valueLabel(q, pos?.value ?? null)}{pos?.estimated ? <span className="tag">estimada</span> : null}</td>;
                     })}
                   </tr>
                 );

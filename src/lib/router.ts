@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
-export type Route = 'inicio' | 'test' | 'resultado' | 'metodologia' | 'fuentes' | 'datos' | 'privacidad';
-const ROUTES: Route[] = ['inicio', 'test', 'resultado', 'metodologia', 'fuentes', 'datos', 'privacidad'];
+export type Route = 'inicio' | 'test' | 'resultado' | 'metodologia' | 'fuentes' | 'datos' | 'privacidad' | 'partidos' | 'temas' | 'brujula';
+const ROUTES: Route[] = ['inicio', 'test', 'resultado', 'metodologia', 'fuentes', 'datos', 'privacidad', 'partidos', 'temas', 'brujula'];
 
 /** Rutas con hash: no requieren configuración de servidor en Vercel/Netlify. */
 function parse(): { route: Route; param: string | null } {

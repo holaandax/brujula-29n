@@ -40,10 +40,10 @@ function AnswerScale({ q, current, onPick }: { q: Question; current: AnswerValue
 }
 
 export function Quiz() {
-  const { index, total, answers, answer, goto, restart, answeredCount } = useQuiz();
+  const { index, total, questions, mode, answers, importance, setImportant, answer, goto, restart, answeredCount } = useQuiz();
   const headingRef = useRef<HTMLHeadingElement>(null);
   const done = index >= total;
-  const q = dataset.questions[Math.min(index, total - 1)]!;
+  const q = questions[Math.min(index, total - 1)]!;
   const topic = dataset.topics.find((t) => t.id === q.topic)!;
 
   useEffect(() => { if (done) navigate('resultado'); }, [done]);
@@ -67,7 +67,7 @@ export function Quiz() {
   return (
     <main id="contenido" className="wrap narrow">
       <div className="quiz-top">
-        <strong>Pregunta {index + 1} de {total}</strong>
+        <strong>Pregunta {index + 1} de {total}<span className="muted" style={{ fontWeight: 400 }}>{mode === 'completo' ? ', test completo' : ', test rápido'}</span></strong>
         <button className="btn ghost small" style={{ minHeight: 36, padding: '.2rem .6rem' }} onClick={() => { restart(); navigate('inicio'); }}>Reiniciar</button>
       </div>
       <ProgressBar value={index} total={total} />
@@ -76,6 +76,12 @@ export function Quiz() {
         <div className="q-topic">{topic.name}</div>
         <h1 id="q-heading" className="q-text" tabIndex={-1} ref={headingRef}>{q.text}</h1>
         {q.help && <p className="muted small">{q.help}</p>}
+        {mode === 'completo' && (
+          <label className="importance">
+            <input type="checkbox" checked={!!importance[q.id]} onChange={(e) => setImportant(q.id, e.target.checked)} />
+            <span>Este tema es especialmente importante para mí</span>
+          </label>
+        )}
         <AnswerScale q={q} current={answers[q.id]} onPick={(v) => answer(q.id, v)} />
       </article>
 

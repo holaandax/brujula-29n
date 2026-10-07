@@ -12,11 +12,12 @@ export function Methodology() {
       <p>El test compara tus respuestas con las posiciones documentadas de cada candidatura. No interpreta tu ideología ni recomienda nada: mide parecido, pregunta a pregunta.</p>
 
       <h2>1. Las preguntas</h2>
-      <p>Hay {n} preguntas repartidas en {dataset.topics.length} áreas: {dataset.topics.map((t) => t.name.toLowerCase()).join(', ')}. Se eligieron cuestiones en las que las candidaturas se diferencian, para que cada respuesta aporte información.</p>
+      <p>El test rápido tiene {dataset.questions.filter((q) => q.set === 'rapido').length} preguntas y el completo {n}, repartidas en {dataset.topics.length} áreas: {dataset.topics.map((t) => t.name.toLowerCase()).join(', ')}. Se eligieron cuestiones en las que las candidaturas se diferencian, para que cada respuesta aporte información.</p>
       <p>Cada enunciado pasó una revisión de sesgo: sin adjetivos valorativos, sin nombrar partidos, sin presentar una opción como moralmente superior y, cuando una medida tiene un coste, el coste aparece en la propia pregunta. Las preguntas de elección (A o B) se usan solo cuando el dilema es la clave del tema.</p>
 
       <h2>2. Las posiciones de los partidos</h2>
       <p>Cada candidatura recibe una posición por pregunta en la misma escala que tus respuestas, de «muy en desacuerdo» a «muy de acuerdo». Se obtiene, por este orden de preferencia, del programa electoral oficial, de documentos programáticos, de la web oficial, de otros documentos oficiales y, solo si no hay nada más, de intervenciones o propuestas oficiales.</p>
+      <p>Cuando ningún documento enuncia la posición y se deduce de otra fuente oficial (por ejemplo, una votación), se marca como <strong>estimada</strong>: aparece con esa etiqueta y su peso en el cálculo no puede superar 0,6.</p>
       <p>Si no hay una fuente clara, la posición queda como <strong>no disponible</strong>. No disponible no es lo mismo que neutral: esa pregunta simplemente no se usa para esa candidatura.</p>
 
       <h2>3. Las fuentes</h2>
@@ -27,7 +28,7 @@ export function Methodology() {
       <div className="formula">coincidencia en una pregunta = 1 − |tu respuesta − su posición| ÷ 2</div>
 
       <h2>5. Los pesos</h2>
-      <p>Cada pregunta puede tener un peso, cada área otro, y cada posición una confianza según el tipo de fuente (un programa electoral pesa más que una declaración). Ahora mismo todas las preguntas y áreas pesan lo mismo: no hay ninguna razón metodológica para que un tema cuente más que otro, y cualquier cambio quedaría documentado.</p>
+      <p>Cada pregunta puede tener un peso, cada área otro, y cada posición una confianza según el tipo de fuente (un programa electoral pesa más que una declaración). En el test completo puedes marcar las preguntas que te importan especialmente: esas cuentan el doble en tu resultado. Es la única forma de cambiar los pesos, y la decides tú. Por lo demás, todas las preguntas y áreas pesan lo mismo: no hay ninguna razón metodológica para que un tema cuente más que otro, y cualquier cambio quedaría documentado.</p>
 
       <h2>6. El resultado general</h2>
       <p>Es la media ponderada de la coincidencia en todas las preguntas que has respondido y en las que la candidatura tiene posición. Si te saltas una pregunta, no cuenta para nadie.</p>
@@ -39,7 +40,7 @@ export function Methodology() {
       <p>Las «respuestas que más han influido» son las que más separan a la primera candidatura de la media del resto, no las que respondiste de forma más extrema.</p>
 
       <h2>8. El mapa ideológico</h2>
-      <p>Es una simplificación. El eje horizontal resume {econ} preguntas económicas (impuestos, gasto, mercado laboral, vivienda, servicios, emisiones); el vertical, {soc} preguntas sociales (igualdad, eutanasia, registro civil, inmigración, penas). Territorio, Europa, energía nuclear y defensa no entran en el mapa porque no encajan en esos dos ejes. Cada punto es la media de sus respuestas en cada eje, con el signo de cada pregunta fijado de antemano en los datos.</p>
+      <p>Es una simplificación. El eje horizontal resume {econ} preguntas económicas (impuestos, gasto, mercado laboral, vivienda, servicios, emisiones); el vertical, {soc} preguntas sociales (igualdad, eutanasia, registro civil, inmigración, penas). Territorio, lengua, instituciones, Europa, energía y defensa no entran en el mapa porque no encajan en esos dos ejes. Cada punto es la media de sus respuestas en cada eje, con el signo de cada pregunta fijado de antemano en los datos.</p>
       <p>El mapa ayuda a orientarse, pero el resultado que cuenta es el cálculo pregunta a pregunta.</p>
 
       <h2>Límites</h2>
