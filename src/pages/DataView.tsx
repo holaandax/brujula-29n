@@ -1,3 +1,4 @@
+import { intlLocale } from '../i18n';
 import { useState } from 'react';
 import { dataset } from '../data';
 import { SOURCE_TYPE_LABEL } from '../lib/constants';
@@ -29,10 +30,10 @@ export function DataView() {
                 return (
                   <tr key={q.id}>
                     <td><strong>{q.subtopic}</strong><br /><span className="muted small">{q.text}</span></td>
-                    <td className="num">{v === null ? '—' : v.toLocaleString('es-ES')}</td>
+                    <td className="num">{v === null ? '—' : v.toLocaleString(intlLocale())}</td>
                     <td>{valueLabel(q, v)}</td>
                     <td className="small">{src ? <>{SOURCE_TYPE_LABEL[src.type]}{src.url ? <>: <a href={src.url} target="_blank" rel="noopener noreferrer">{src.title}</a></> : `: ${src.title}`}{src.reference ? ` (${src.reference})` : ''}{pos?.note ? `. ${pos.note}` : ''}{pos?.estimated ? <span className="tag">estimada</span> : null}</> : <span className="muted">Sin fuente</span>}</td>
-                    <td className="small">{pos ? new Date(pos.updatedAt).toLocaleDateString('es-ES') : '—'}</td>
+                    <td className="small">{pos ? new Date(pos.updatedAt).toLocaleDateString(intlLocale()) : '—'}</td>
                   </tr>
                 );
               })}

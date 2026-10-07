@@ -1,4 +1,5 @@
 import type { SourceType } from '../types';
+import { t } from '../i18n';
 
 /** Confianza por defecto según el tipo de fuente (prioridad de fuentes del brief). */
 export const SOURCE_CONFIDENCE: Record<SourceType, number> = {
@@ -21,14 +22,19 @@ export const SOURCE_TYPE_LABEL: Record<SourceType, string> = {
   demo: 'Dato ficticio',
 };
 
+const L = (value: number, es: string, short: string) => ({ value, get label() { return t(es); }, get short() { return t(short); } });
+/** Las etiquetas se traducen al leerlas (getter), así siguen el idioma activo. */
 export const LIKERT = [
-  { value: -1, label: 'Muy en desacuerdo', short: 'Muy en desacuerdo' },
-  { value: -0.5, label: 'En desacuerdo', short: 'En desacuerdo' },
-  { value: 0, label: 'Neutral / No lo tengo claro', short: 'Neutral' },
-  { value: 0.5, label: 'De acuerdo', short: 'De acuerdo' },
-  { value: 1, label: 'Muy de acuerdo', short: 'Muy de acuerdo' },
+  L(-1, 'Muy en desacuerdo', 'Muy en desacuerdo'),
+  L(-0.5, 'En desacuerdo', 'En desacuerdo'),
+  L(0, 'Neutral / No lo tengo claro', 'Neutral'),
+  L(0.5, 'De acuerdo', 'De acuerdo'),
+  L(1, 'Muy de acuerdo', 'Muy de acuerdo'),
 ] as const;
 
 /** Aviso de privacidad del test (portada y primera pregunta). Decir «tus respuestas», no «tus datos». */
+export const privacyTags = () => [t('Resultado al momento'), t('Sin registro'), t('Anónimo')];
+/** @deprecated usar privacyTags() */
 export const PRIVACY_TAGS = ['Resultado al momento', 'Sin registro', 'Anónimo'];
 export const PRIVACY_LINE = 'Tus respuestas no salen de tu navegador y no las guardamos en ningún sitio.';
+export const privacyLine = () => t(PRIVACY_LINE);

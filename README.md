@@ -91,3 +91,14 @@ Cambiar una posición, añadir un partido o reescribir una pregunta = editar un 
 ## Circunscripciones y Senado
 
 El modelo de datos ya admite `circunscripciones` por candidatura y el algoritmo acepta un filtro. El selector está desactivado (`enableCircunscripcion: false`) hasta que se publiquen las candidaturas proclamadas. El Senado no se mezcla con el cálculo.
+
+## Idiomas
+
+Castellano, català, galego y euskara (selector en la barra superior; la preferencia se guarda en `localStorage`, no es un dato político).
+
+- `src/i18n/index.tsx`: `t('texto en castellano', { variables })`. Si falta una traducción, se muestra el castellano.
+- `src/i18n/{ca,gl,eu}.ts`: diccionarios. La clave es el texto en castellano.
+- Traducido: cabecera, pie, portada, test (las 30 preguntas y sus opciones), resultados, mapa, comparador y tarjeta para compartir.
+- Pendiente: páginas de partidos, temas, brújula, candidatos, propuestas, pactos, calendario, cómo votar, metodología, fuentes, datos y privacidad. Muestran un aviso en el idioma elegido.
+- `tests/i18n.test.ts` falla si un texto pasado a `t()` no tiene traducción en algún idioma o si se pierde una variable.
+- **El euskera necesita revisión por una persona nativa antes de publicar**, sobre todo las preguntas del test.

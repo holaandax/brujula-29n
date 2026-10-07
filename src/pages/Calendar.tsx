@@ -1,9 +1,10 @@
+import { intlLocale } from '../i18n';
 import { ELECTION, PHASES, daysUntil, nextKeyEvent, type CalendarEvent, type CalendarPhase } from '../data/electoral';
 import { PageHead } from '../components/Layout';
 import { href } from '../lib/router';
 
-const day = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }).replace('.', '');
-const weekday = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString('es-ES', { weekday: 'long' });
+const day = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(intlLocale(), { day: 'numeric', month: 'short' }).replace('.', '');
+const weekday = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(intlLocale(), { weekday: 'long' });
 
 export function dateRange(e: CalendarEvent): string {
   return e.end ? `${day(e.date)} – ${day(e.end)}` : day(e.date);

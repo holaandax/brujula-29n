@@ -434,3 +434,12 @@ main { min-height: 70vh; padding-block: 1.5rem 4rem; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; scroll-behavior: auto !important; }
 }
+
+/* Selector de idioma */
+.lang-switch { display: inline-flex; gap: 2px; margin-left: auto; }
+.lang-switch button { font: 600 .75rem/1 var(--sans, system-ui); letter-spacing: .04em; padding: .3rem .45rem; border: 1px solid transparent; border-radius: 4px; background: none; color: inherit; cursor: pointer; opacity: .65; }
+.lang-switch button:hover { opacity: 1; }
+.lang-switch button[aria-pressed='true'] { opacity: 1; border-color: currentColor; }
+.dateline .wrap { flex-wrap: wrap; row-gap: 0; }
+.dateline .cd { min-width: 0; }
+@media (max-width: 480px) { .dateline .lang-switch { margin-left: 0; } .dateline .cd { flex: 1 1 100%; padding-top: .3rem; } }

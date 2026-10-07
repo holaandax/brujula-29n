@@ -4,6 +4,7 @@ import { Header, Footer, ErrorBoundary } from './components/Layout';
 import { Landing } from './components/Landing';
 import { Quiz } from './components/Quiz';
 import { QuizProvider } from './state/quiz';
+import { LocaleProvider, UntranslatedNotice, useLocale } from './i18n';
 
 const Results = lazy(() => import('./components/Results').then((m) => ({ default: m.Results })));
 const Methodology = lazy(() => import('./pages/Methodology').then((m) => ({ default: m.Methodology })));
@@ -40,17 +41,33 @@ function Page({ route, param }: ReturnType<typeof useRoute>) {
   }
 }
 
-export default function App() {
+/** Páginas aún sin traducir: muestran un aviso en el idioma elegido. */
+const SPANISH_ONLY = new Set(['privacidad', 'metodologia', 'fuentes', 'datos', 'partidos', 'temas', 'brujula', 'calendario', 'como-votar', 'pactos', 'propuestas', 'candidatos']);
+
+function Shell() {
   const r = useRoute();
+  const { locale } = useLocale();
+  // key={locale}: al cambiar de idioma se vuelve a pintar todo; las respuestas siguen en QuizProvider.
   return (
-    <QuizProvider>
+    <div key={locale}>
       <Header route={r.route} />
       <ErrorBoundary>
         <Suspense fallback={<main className="wrap" aria-busy="true" />}>
+          {SPANISH_ONLY.has(r.route) && <div className="wrap wide" style={{ paddingTop: '1rem' }}><UntranslatedNotice /></div>}
           <Page {...r} />
         </Suspense>
       </ErrorBoundary>
       <Footer />
-    </QuizProvider>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <LocaleProvider>
+      <QuizProvider>
+        <Shell />
+      </QuizProvider>
+    </LocaleProvider>
   );
 }

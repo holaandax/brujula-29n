@@ -1,3 +1,4 @@
+import { intlLocale } from '../i18n';
 import { candidates, type Candidate } from '../data/candidates';
 import { realParties } from '../data/parties';
 import { PageHead } from '../components/Layout';
@@ -6,7 +7,7 @@ import { initials } from '../lib/labels';
 import { electoralSource } from '../data/sources-electoral';
 
 const STATUS = { proclamado: 'Candidatura proclamada', anunciado: 'Anunciado por su partido · pendiente de proclamación', pendiente: 'Candidatura pendiente de confirmación oficial' };
-const fmt = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+const fmt = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(intlLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
 
 const partyOf = (id: string) => realParties.find((p) => p.id === id);
 

@@ -1,10 +1,11 @@
+import { intlLocale } from '../i18n';
 import { ELECTION } from '../data/electoral';
 import { PageHead } from '../components/Layout';
 import { ProvisionalNotice } from './Calendar';
 import { href } from '../lib/router';
 
 const ev = (label: string) => ELECTION.calendar.find((e) => e.label.startsWith(label));
-const long = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString('es-ES', { day: 'numeric', month: 'long' });
+const long = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(intlLocale(), { day: 'numeric', month: 'long' });
 /** «del 6 de octubre al 19 de noviembre» o «el 26 de noviembre». */
 const when = (label: string) => { const e = ev(label); return !e ? '' : e.end ? `del ${long(e.date)} al ${long(e.end)}` : `el ${long(e.date)}`; };
 

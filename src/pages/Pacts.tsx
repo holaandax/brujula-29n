@@ -1,3 +1,4 @@
+import { intlLocale } from '../i18n';
 import { useMemo, useState } from 'react';
 import { ELECTION_RESULTS, PACT_PRESETS } from '../data/results';
 import { Hemicycle, type SeatGroup } from '../components/Hemicycle';
@@ -6,7 +7,7 @@ import { absoluteMajority, tally, verdict, type Vote } from '../lib/pacts';
 import { href } from '../lib/router';
 
 const VOTES: { v: Vote; label: string }[] = [{ v: 'si', label: 'Sí' }, { v: 'abstencion', label: 'Abst.' }, { v: 'no', label: 'No' }];
-const fmtDate = (d: string) => new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+const fmtDate = (d: string) => new Date(d).toLocaleDateString(intlLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
 
 export function Pacts() {
   const [electionId, setElectionId] = useState(ELECTION_RESULTS[0]!.id);

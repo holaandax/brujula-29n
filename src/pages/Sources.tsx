@@ -1,3 +1,4 @@
+import { intlLocale } from '../i18n';
 import { dataset } from '../data';
 import { ELECTION, circunscripciones } from '../data/electoral';
 import { SOURCE_TYPE_LABEL } from '../lib/constants';
@@ -15,7 +16,7 @@ function ExtLink({ url, verified, children }: { url: string; verified: boolean; 
 }
 
 export function Sources() {
-  const fmt = (d: string) => new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+  const fmt = (d: string) => new Date(d).toLocaleDateString(intlLocale(), { day: 'numeric', month: 'long', year: 'numeric' });
   return (
     <main id="contenido" className="wrap narrow prose">
       <PageHead kicker="Fuentes" title="Fuentes y programas" dek={`Para cada candidatura: estado, programa, web oficial y la fuente de cada área. ${dataset.meta.notice}`} />

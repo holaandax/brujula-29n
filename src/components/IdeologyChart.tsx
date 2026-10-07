@@ -3,14 +3,15 @@ import { dataset } from '../data';
 import { mapCoordinates, type Results } from '../lib/scoring';
 import { pct } from '../lib/labels';
 import { href } from '../lib/router';
+import { t as tr } from '../i18n';
 
 const W = 360, H = 360, PAD = 36;
 const sx = (x: number) => PAD + ((x + 1) / 2) * (W - 2 * PAD);
 const sy = (y: number) => PAD + ((y + 1) / 2) * (H - 2 * PAD); // y +1 (conservador) abajo
 
 export function describePosition(x: number, y: number): string {
-  const h = Math.abs(x) < 0.15 ? 'centro' : x < 0 ? (x < -0.55 ? 'izquierda' : 'centroizquierda') : (x > 0.55 ? 'derecha' : 'centroderecha');
-  const v = Math.abs(y) < 0.15 ? 'posición intermedia en lo social' : y < 0 ? 'más progresista' : 'más conservador';
+  const h = tr(Math.abs(x) < 0.15 ? 'centro' : x < 0 ? (x < -0.55 ? 'izquierda' : 'centroizquierda') : (x > 0.55 ? 'derecha' : 'centroderecha'));
+  const v = tr(Math.abs(y) < 0.15 ? 'posición intermedia en lo social' : y < 0 ? 'más progresista' : 'más conservador');
   return `${h}, ${v}`;
 }
 
@@ -29,20 +30,20 @@ export function PoliticalMap({ points, user }: { points: MapPointView[]; user?: 
     placed.push({ x, y }); labelY.set(p.id, y);
   }
   const selected = points.find((p) => p.id === sel);
-  const info = (p: MapPointView) => `${p.label}${p.score !== undefined ? `, ${pct(p.score)} de afinidad` : ''}`;
+  const info = (p: MapPointView) => `${p.label}${p.score !== undefined ? `, ${pct(p.score)} ${tr('de afinidad')}` : ''}`;
 
   return (
     <div className="chart-card">
       <svg className="chart" viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="map-title map-desc">
-        <title id="map-title">Mapa ideológico simplificado</title>
-        <desc id="map-desc">{(user ? `Tú: ${describePosition(user.x, user.y)}. ` : '') + points.map((p) => `${info(p)}: ${describePosition(p.x, p.y)}.`).join(' ')}</desc>
+        <title id="map-title">{tr('Mapa ideológico simplificado')}</title>
+        <desc id="map-desc">{(user ? `${tr('Tú')}: ${describePosition(user.x, user.y)}. ` : '') + points.map((p) => `${info(p)}: ${describePosition(p.x, p.y)}.`).join(' ')}</desc>
         <rect x={PAD} y={PAD} width={W - 2 * PAD} height={H - 2 * PAD} fill="none" className="axis" />
         <line x1={W / 2} y1={PAD} x2={W / 2} y2={H - PAD} className="axis" />
         <line x1={PAD} y1={H / 2} x2={W - PAD} y2={H / 2} className="axis" />
-        <text x={PAD} y={H - PAD + 18} fontSize="11">← Izquierda</text>
-        <text x={W - PAD} y={H - PAD + 18} fontSize="11" textAnchor="end">Derecha →</text>
-        <text x={W / 2} y={24} fontSize="11" textAnchor="middle">Más progresista</text>
-        <text x={W / 2} y={H - PAD + 18} fontSize="11" textAnchor="middle">Más conservador</text>
+        <text x={PAD} y={H - PAD + 18} fontSize="11">← {tr('Izquierda')}</text>
+        <text x={W - PAD} y={H - PAD + 18} fontSize="11" textAnchor="end">{tr('Derecha')} →</text>
+        <text x={W / 2} y={24} fontSize="11" textAnchor="middle">{tr('Más progresista')}</text>
+        <text x={W / 2} y={H - PAD + 18} fontSize="11" textAnchor="middle">{tr('Más conservador')}</text>
         {points.map((p) => (
           <g key={p.id} className={`pt${sel === p.id ? ' sel' : ''}`} tabIndex={0} role="button" aria-label={info(p)}
              onClick={() => setSel(p.id)} onFocus={() => setSel(p.id)} onMouseEnter={() => setSel(p.id)}
@@ -52,17 +53,17 @@ export function PoliticalMap({ points, user }: { points: MapPointView[]; user?: 
           </g>
         ))}
         {user && (
-          <g className={`pt${sel === 'user' ? ' sel' : ''}`} tabIndex={0} role="button" aria-label="Tu posición"
+          <g className={`pt${sel === 'user' ? ' sel' : ''}`} tabIndex={0} role="button" aria-label={tr('Tu posición')}
              onClick={() => setSel('user')} onFocus={() => setSel('user')} onMouseEnter={() => setSel('user')}>
             <rect x={sx(user.x) - 22} y={sy(user.y) - 12} width={44} height={24} rx={12} fill="var(--ink)" />
-            <text x={sx(user.x)} y={sy(user.y) + 4.5} fontSize="12" textAnchor="middle" style={{ fill: 'var(--paper)', fontWeight: 800 }}>TÚ</text>
+            <text x={sx(user.x)} y={sy(user.y) + 4.5} fontSize="12" textAnchor="middle" style={{ fill: 'var(--paper)', fontWeight: 800 }}>{tr('TÚ')}</text>
           </g>
         )}
       </svg>
       <div className="chart-info" aria-live="polite">
         {selected
-          ? <><strong>{selected.label}</strong>{selected.score !== undefined ? `: ${pct(selected.score, 1)} de afinidad` : ''}. Posición aproximada: {describePosition(selected.x, selected.y)}.</>
-          : user ? <><strong>Tu posición</strong>: {describePosition(user.x, user.y)}. Toca un punto para ver cada candidatura.</> : 'Toca un punto para ver cada candidatura.'}
+          ? <><strong>{selected.label}</strong>{selected.score !== undefined ? `: ${pct(selected.score, 1)} ${tr('de afinidad')}` : ''}. {tr('Posición aproximada')}: {describePosition(selected.x, selected.y)}.</>
+          : user ? <><strong>{tr('Tu posición')}</strong>: {describePosition(user.x, user.y)}. {tr('Toca un punto para ver cada candidatura.')}</> : tr('Toca un punto para ver cada candidatura.')}
       </div>
     </div>
   );
@@ -84,13 +85,12 @@ export function IdeologyChart({ res }: { res: Results }) {
   });
   return (
     <section className="section" aria-labelledby="h-map">
-      <h2 id="h-map">Mapa ideológico</h2>
+      <h2 id="h-map">{tr('Mapa ideológico')}</h2>
       <p className="lead">
-        Una representación simplificada. Cada punto resume solo las preguntas asignadas a cada eje, así que dos partidos cercanos
-        aquí pueden diferir mucho en territorio, Europa o energía, que no entran en el mapa. <a href={href('metodologia')}>Cómo se construye</a>
+        {tr('Una representación simplificada. Cada punto resume solo las preguntas asignadas a cada eje, así que dos partidos cercanos aquí pueden diferir mucho en territorio, Europa o energía, que no entran en el mapa.')} <a href={href('metodologia')}>{tr('Cómo se construye')}</a>
       </p>
       {!res.map.user
-        ? <p className="empty">No has respondido suficientes preguntas de los dos ejes para situarte en el mapa.</p>
+        ? <p className="empty">{tr('No has respondido suficientes preguntas de los dos ejes para situarte en el mapa.')}</p>
         : <PoliticalMap points={points} user={res.map.user} />}
     </section>
   );

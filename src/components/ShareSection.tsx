@@ -3,8 +3,9 @@ import { dataset } from '../data';
 import { APP } from '../config';
 import type { Results } from '../lib/scoring';
 import { copyText, shareSummary, whatsappUrl, xUrl } from '../lib/share';
+import { t as tr } from '../i18n';
 
-const topicName = (id: string) => dataset.topics.find((t) => t.id === id)?.name ?? id;
+const topicName = (id: string) => tr(dataset.topics.find((x) => x.id === id)?.name ?? id);
 
 /** Dibuja la tarjeta en un canvas local. La imagen se genera en el navegador y no se sube a ningún sitio. */
 function drawCard(canvas: HTMLCanvasElement, res: Results) {
@@ -23,13 +24,12 @@ function drawCard(canvas: HTMLCanvasElement, res: Results) {
 
   const L = x + 80, R = x + w - 80;
   c.fillStyle = '#5F5D58'; c.font = `italic 400 44px ${display}`;
-  c.fillText('¿Con qué partido coinciden', L, y + 120);
-  c.fillText('más tus ideas?', L, y + 170);
+  wrapText(c, tr('¿Con qué partido coinciden más tus ideas?'), L, y + 120, R - L, 50);
 
   const lead = res.leaders[0]!;
   c.fillStyle = '#151514';
   if (res.isTie) {
-    c.font = `700 40px ${body}`; c.fillStyle = '#151514'; c.fillText('Empate técnico', L, y + 290);
+    c.font = `700 40px ${body}`; c.fillStyle = '#151514'; c.fillText(tr('Empate técnico'), L, y + 290);
     c.fillStyle = '#151514'; c.font = `600 92px ${display}`;
     c.fillText(fit(c, res.leaders.map((l) => l.party.shortName).join(' / '), R - L), L, y + 400);
     c.font = `500 150px ${display}`; c.fillText(`${Math.round(lead.score)}%`, L, y + 560);
@@ -37,7 +37,7 @@ function drawCard(canvas: HTMLCanvasElement, res: Results) {
     c.font = `600 120px ${display}`; c.fillText(fit(c, lead.party.shortName, R - L), L, y + 330);
     c.font = `500 220px ${display}`; c.fillText(`${Math.round(lead.score)}%`, L, y + 540);
   }
-  c.font = `600 40px ${body}`; c.fillStyle = '#5F5D58'; c.fillText('de coincidencia', L, y + 600);
+  c.font = `600 40px ${body}`; c.fillStyle = '#5F5D58'; c.fillText(tr('de coincidencia'), L, y + 600);
 
   c.strokeStyle = '#151514'; c.lineWidth = 4; c.beginPath(); c.moveTo(L, y + 670); c.lineTo(R, y + 670); c.stroke();
   // Afinidad de la candidatura principal en sus áreas con más datos.
@@ -49,8 +49,18 @@ function drawCard(canvas: HTMLCanvasElement, res: Results) {
     c.fillText(`${Math.round(t.score!)}%`, R, ry); c.textAlign = 'left';
   });
   c.fillStyle = '#5F5D58'; c.font = `500 32px ${body}`;
-  c.fillText(`${APP.name} · Elecciones generales 29N 2026`, L, y + h - 90);
-  if (dataset.meta.mode === 'demo') { c.fillStyle = '#151514'; c.fillText('Datos de demostración: candidaturas ficticias', L, y + h - 45); }
+  c.fillText(`${APP.name} · ${tr('Elecciones generales 29N 2026')}`, L, y + h - 90);
+  if (dataset.meta.mode === 'demo') { c.fillStyle = '#151514'; c.fillText(tr('Datos de demostración: candidaturas ficticias'), L, y + h - 45); }
+}
+
+/** Parte un texto en líneas que caben en maxW (la pregunta cambia de longitud según el idioma). */
+function wrapText(c: CanvasRenderingContext2D, text: string, x: number, y: number, maxW: number, lh: number) {
+  let line = '', yy = y;
+  for (const w of text.split(' ')) {
+    const test = line ? `${line} ${w}` : w;
+    if (c.measureText(test).width > maxW && line) { c.fillText(line, x, yy); line = w; yy += lh; } else line = test;
+  }
+  if (line) c.fillText(line, x, yy);
 }
 
 function fit(c: CanvasRenderingContext2D, text: string, max: number): string {
@@ -95,16 +105,16 @@ export function ShareSection({ res }: { res: Results }) {
 
   return (
     <section className="section" aria-labelledby="h-share">
-      <h2 id="h-share">Compartir mi resultado</h2>
-      <p className="lead">Solo se comparte el resultado que ves en la tarjeta, nunca tus respuestas. Nada pasa por nuestros servidores.</p>
+      <h2 id="h-share">{tr('Compartir mi resultado')}</h2>
+      <p className="lead">{tr('Solo se comparte el resultado que ves en la tarjeta, nunca tus respuestas. Nada pasa por nuestros servidores.')}</p>
       <canvas ref={canvasRef} hidden />
-      {img && <img className="share-card-preview" src={img} alt={`Tarjeta de resultado: ${text.split('\n')[0]}`} />}
+      {img && <img className="share-card-preview" src={img} alt={`${tr('Tarjeta de resultado')}: ${text.split('\n')[0]}`} />}
       <div className="row">
-        <button className="btn primary" onClick={shareImage}>Guardar o compartir imagen</button>
+        <button className="btn primary" onClick={shareImage}>{tr('Guardar o compartir imagen')}</button>
         <a className="btn" href={whatsappUrl(text)} target="_blank" rel="noopener noreferrer">WhatsApp</a>
         <a className="btn" href={xUrl(text)} target="_blank" rel="noopener noreferrer">X</a>
-        <button className="btn" onClick={async () => flash((await copyText(APP.siteUrl)) ? 'Enlace copiado' : 'No se ha podido copiar')}>Copiar enlace</button>
-        <button className="btn" onClick={async () => flash((await copyText(text)) ? 'Resumen copiado' : 'No se ha podido copiar')}>Copiar resumen</button>
+        <button className="btn" onClick={async () => flash((await copyText(APP.siteUrl)) ? tr('Enlace copiado') : tr('No se ha podido copiar'))}>{tr('Copiar enlace')}</button>
+        <button className="btn" onClick={async () => flash((await copyText(text)) ? tr('Resumen copiado') : tr('No se ha podido copiar'))}>{tr('Copiar resumen')}</button>
       </div>
       <p className="toast" role="status">{msg}</p>
     </section>
