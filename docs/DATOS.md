@@ -3,7 +3,7 @@
 ## Lo que falta (a 07/10/2026)
 1. **Lista oficial de candidaturas** — tras la proclamación (BOE, 03/11/2026). Actualizar `src/data/parties.ts`: `status`, `scope`, `circunscripciones`, coaliciones nuevas, altas y bajas.
 2. **Programas electorales 2026** — añadir `program: { title, url, date, verified: true }` a cada partido cuando se publiquen.
-3. **Posiciones** — en `src/data/positions.ts` hay 241, tomadas de los programas de 2023 (tabla `ROWS`: pregunta, valor, `'p'` programa o `'v'` actuación en el Congreso, página, nota). Sustituirlas por las de 2026 cuando salgan los programas.
+3. **Posiciones** — en `src/data/positions.ts` hay 242, tomadas de los programas de 2023 (tabla `ROWS`: pregunta, valor, `'p'` programa o `'v'` actuación en el Congreso, página, nota). Sustituirlas por las de 2026 cuando salgan los programas.
 4. **Verificar webs oficiales** — todas están en `verified: false`. Sumar, CC y UPN no tienen URL todavía.
 5. **URL del BOE** del Real Decreto de convocatoria en `src/data/electoral.ts` (`BOE_URL`).
 6. Dominio final en `config.ts`, `index.html`, `robots.txt`, `sitemap.xml`.

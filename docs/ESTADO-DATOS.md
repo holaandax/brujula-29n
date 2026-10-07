@@ -9,8 +9,8 @@
 - Fotos: 11 retratos de Wikimedia Commons con licencia libre (CC0, dominio público, CC BY, CC BY-SA), con autor, licencia y enlace en cada tarjeta.
 
 ## 🟠 Provisional: posiciones de los programas de 2023
-- 241 posiciones en las 30 preguntas, codificadas el 07/10/2026 a partir de los programas de las generales de 2023 (con página del PDF) y, cuando el programa no se pronuncia, de la actuación en el Congreso (marcadas como estimadas, confianza 0,6).
-- Cobertura (de 30): PSOE 28, Vox 26, Podemos 25, PP 24, Sumar 24, ERC 23, EH Bildu 22, BNG 20, Junts 15, PNV 15, UPN 15, CC 4.
+- 242 posiciones en las 30 preguntas, codificadas el 07/10/2026 a partir de los programas de las generales de 2023 (con página del PDF) y, cuando el programa no se pronuncia, de la actuación en el Congreso (marcadas como estimadas, confianza 0,6).
+- Cobertura (de 30): PSOE 28, Vox 26, Podemos 25, PP 24, Sumar 24, ERC 23, EH Bildu 23, BNG 20, Junts 15, PNV 15, UPN 15, CC 4. Votaciones contrastadas con prensa el 07/10/2026.
 - Podemos usa el programa de Sumar 2023 (concurrió dentro). UPN usa su programa foral de 2023 (no publicó uno para las generales). CC solo tiene un manifiesto: queda fuera del ranking por falta de datos.
 - Vox, Sumar, Junts y EH Bildu enlazan a copias de su programa en medios o partidos aliados (`verified: false`): sustituir por la URL oficial si aparece.
 - Pendiente: segunda codificación independiente y revisión de las posiciones estimadas.
