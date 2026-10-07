@@ -1,4 +1,4 @@
-import { intlLocale } from '../i18n';
+import { intlLocale, rich, t } from '../i18n';
 import { ELECTION } from '../data/electoral';
 import { PageHead } from '../components/Layout';
 import { ProvisionalNotice } from './Calendar';
@@ -7,7 +7,7 @@ import { href } from '../lib/router';
 const ev = (label: string) => ELECTION.calendar.find((e) => e.label.startsWith(label));
 const long = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(intlLocale(), { day: 'numeric', month: 'long' });
 /** «del 6 de octubre al 19 de noviembre» o «el 26 de noviembre». */
-const when = (label: string) => { const e = ev(label); return !e ? '' : e.end ? `del ${long(e.date)} al ${long(e.end)}` : `el ${long(e.date)}`; };
+const when = (label: string) => { const e = ev(label); return !e ? '' : e.end ? t('del {a} al {b}', { a: long(e.date), b: long(e.end) }) : t('el {a}', { a: long(e.date) }); };
 
 const TOC = [
   ['quien', '¿Puedo votar?'], ['persona', 'En persona'], ['papeletas', 'Las papeletas'], ['blanco', 'Blanco y nulo'],
@@ -26,106 +26,106 @@ export function HowToVote() {
   return (
     <main id="contenido" className="wrap howto">
       <PageHead
-        kicker="Cómo votar"
-        title="Cómo votar el 29 de noviembre"
-        dek="En persona, por correo o desde el extranjero: qué necesitas, qué plazos hay y cómo evitar que tu voto sea nulo."
+        kicker={t('Cómo votar')}
+        title={t('Cómo votar el 29 de noviembre')}
+        dek={t('En persona, por correo o desde el extranjero: qué necesitas, qué plazos hay y cómo evitar que tu voto sea nulo.')}
       >
         <ul className="howto-toc" style={{ marginTop: '1.2rem' }}>
-          {TOC.map(([id, label]) => <li key={id}><a href={`#/como-votar`} onClick={(e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }}>{label}</a></li>)}
+          {TOC.map(([id, label]) => <li key={id}><a href={`#/como-votar`} onClick={(e) => { e.preventDefault(); document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }}>{t(label)}</a></li>)}
         </ul>
       </PageHead>
       <ProvisionalNotice />
 
       <div className="prose">
         <section id="quien">
-          <h2>¿Puedo votar?</h2>
-          <p>Sí, si tienes nacionalidad española, cumples 18 años como muy tarde el día de la votación y estás inscrito en el censo electoral. No hace falta ningún trámite previo para votar en persona.</p>
-          <p>Puedes comprobar en el INE que tus datos del censo son correctos y reclamar si hay algún error <strong>{when('Consulta del censo')}</strong>.</p>
+          <h2>{t('¿Puedo votar?')}</h2>
+          <p>{t('Sí, si tienes nacionalidad española, cumples 18 años como muy tarde el día de la votación y estás inscrito en el censo electoral. No hace falta ningún trámite previo para votar en persona.')}</p>
+          <p>{rich('Puedes comprobar en el INE que tus datos del censo son correctos y reclamar si hay algún error **{when}**.', { when: when('Consulta del censo') })}</p>
         </section>
 
         <section id="persona">
-          <h2>Votar en persona</h2>
+          <h2>{t('Votar en persona')}</h2>
           <ol className="steps">
-            <li><span><strong>Busca tu colegio y tu mesa.</strong> Vienen en la tarjeta censal que recibirás en casa. Si no te llega, puedes consultarlos en la web del INE. Puedes votar sin la tarjeta.</span></li>
-            <li><span><strong>Lleva un documento original con foto:</strong> DNI, pasaporte o permiso de conducir. No valen fotocopias.</span></li>
-            <li><span><strong>Coge las papeletas y los sobres.</strong> Están en el colegio, y también puedes llevar de casa las que te envíen los partidos. Mete la papeleta en el sobre en la cabina o donde prefieras.</span></li>
-            <li><span><strong>En la mesa,</strong> di tu nombre y enseña el documento. Entregas los sobres al presidente o presidenta, que los mete en las urnas.</span></li>
+            <li><span>{rich('**Busca tu colegio y tu mesa.** Vienen en la tarjeta censal que recibirás en casa. Si no te llega, puedes consultarlos en la web del INE. Puedes votar sin la tarjeta.')}</span></li>
+            <li><span>{rich('**Lleva un documento original con foto:** DNI, pasaporte o permiso de conducir. No valen fotocopias.')}</span></li>
+            <li><span>{rich('**Coge las papeletas y los sobres.** Están en el colegio, y también puedes llevar de casa las que te envíen los partidos. Mete la papeleta en el sobre en la cabina o donde prefieras.')}</span></li>
+            <li><span>{rich('**En la mesa,** di tu nombre y enseña el documento. Entregas los sobres al presidente o presidenta, que los mete en las urnas.')}</span></li>
           </ol>
-          <p>Los colegios abren de <strong>9:00 a 20:00</strong>. Si trabajas ese día y tu horario coincide con el de votación, tienes derecho a un permiso retribuido de hasta cuatro horas.</p>
+          <p>{rich('Los colegios abren de **9:00 a 20:00**. Si trabajas ese día y tu horario coincide con el de votación, tienes derecho a un permiso retribuido de hasta cuatro horas.')}</p>
         </section>
 
         <section id="papeletas">
-          <h2>Las dos papeletas</h2>
-          <p>El mismo día se vota al Congreso y al Senado, cada uno con su papeleta y su urna.</p>
+          <h2>{t('Las dos papeletas')}</h2>
+          <p>{t('El mismo día se vota al Congreso y al Senado, cada uno con su papeleta y su urna.')}</p>
           <div className="ballots">
             <div className="ballot-ex congreso">
-              <span className="sans">Congreso · papeleta blanca</span>
-              <h3>Votas a una lista entera</h3>
-              <p>Las listas son cerradas: eliges una candidatura y su orden de candidatos no se puede cambiar. Si tachas, añades o marcas nombres, el voto es nulo.</p>
+              <span className="sans">{t('Congreso · papeleta blanca')}</span>
+              <h3>{t('Votas a una lista entera')}</h3>
+              <p>{t('Las listas son cerradas: eliges una candidatura y su orden de candidatos no se puede cambiar. Si tachas, añades o marcas nombres, el voto es nulo.')}</p>
             </div>
             <div className="ballot-ex senado">
-              <span className="sans">Senado · papeleta sepia</span>
-              <h3>Marcas personas con una cruz</h3>
-              <p>Puedes elegir candidatos de partidos distintos: hasta 3 en las provincias peninsulares; hasta 2 en Gran Canaria, Mallorca, Tenerife, Ceuta y Melilla; 1 en el resto de islas.</p>
+              <span className="sans">{t('Senado · papeleta sepia')}</span>
+              <h3>{t('Marcas personas con una cruz')}</h3>
+              <p>{t('Puedes elegir candidatos de partidos distintos: hasta 3 en las provincias peninsulares; hasta 2 en Gran Canaria, Mallorca, Tenerife, Ceuta y Melilla; 1 en el resto de islas.')}</p>
             </div>
           </div>
         </section>
 
         <section id="blanco">
-          <h2>Voto en blanco y voto nulo</h2>
+          <h2>{t('Voto en blanco y voto nulo')}</h2>
           <div className="vs">
             <div>
-              <h3>En blanco</h3>
+              <h3>{t('En blanco')}</h3>
               <ul>
-                <li>Congreso: el sobre vacío.</li>
-                <li>Senado: la papeleta sin ninguna cruz.</li>
-                <li>Es un voto válido: cuenta para calcular el 3% mínimo que necesita una candidatura en cada provincia para optar a escaño.</li>
+                <li>{t('Congreso: el sobre vacío.')}</li>
+                <li>{t('Senado: la papeleta sin ninguna cruz.')}</li>
+                <li>{t('Es un voto válido: cuenta para calcular el 3% mínimo que necesita una candidatura en cada provincia para optar a escaño.')}</li>
               </ul>
             </div>
             <div>
-              <h3>Nulo</h3>
+              <h3>{t('Nulo')}</h3>
               <ul>
-                <li>Papeletas tachadas, escritas o modificadas.</li>
-                <li>Papeletas de candidaturas distintas en el mismo sobre.</li>
-                <li>En el Senado, más cruces de las permitidas.</li>
-                <li>Papeletas sin sobre o en un sobre que no es el oficial.</li>
-                <li>No cuenta para nada.</li>
+                <li>{t('Papeletas tachadas, escritas o modificadas.')}</li>
+                <li>{t('Papeletas de candidaturas distintas en el mismo sobre.')}</li>
+                <li>{t('En el Senado, más cruces de las permitidas.')}</li>
+                <li>{t('Papeletas sin sobre o en un sobre que no es el oficial.')}</li>
+                <li>{t('No cuenta para nada.')}</li>
               </ul>
             </div>
           </div>
-          <p className="small muted">Dos papeletas iguales de la misma candidatura en un sobre cuentan como un solo voto válido.</p>
+          <p className="small muted">{t('Dos papeletas iguales de la misma candidatura en un sobre cuentan como un solo voto válido.')}</p>
         </section>
 
         <section id="correo">
-          <h2>Votar por correo</h2>
+          <h2>{t('Votar por correo')}</h2>
           <ol className="steps">
-            <li><span><strong>Pídelo {when('Plazo para pedir el voto por correo')}.</strong> En cualquier oficina de Correos con tu DNI, o en su web con DNI electrónico o certificado digital. La solicitud es personal.</span></li>
-            <li><span><strong>Recibe la documentación</strong> en casa, {when('Envío a casa')}: papeletas, sobres, tu certificado del censo e instrucciones. Te la entregan en mano.</span></li>
-            <li><span><strong>Prepara el voto.</strong> Mete cada papeleta en su sobre y, junto con el certificado del censo, en el sobre dirigido a tu mesa.</span></li>
-            <li><span><strong>Entrégalo en Correos</strong> como muy tarde {when('Último día para entregar')}. Tendrás que identificarte. No hace falta sello: el envío es gratuito.</span></li>
+            <li><span>{rich('**Pídelo {when}.** En cualquier oficina de Correos con tu DNI, o en su web con DNI electrónico o certificado digital. La solicitud es personal.', { when: when('Plazo para pedir el voto por correo') })}</span></li>
+            <li><span>{rich('**Recibe la documentación** en casa, {when}: papeletas, sobres, tu certificado del censo e instrucciones. Te la entregan en mano.', { when: when('Envío a casa') })}</span></li>
+            <li><span>{rich('**Prepara el voto.** Mete cada papeleta en su sobre y, junto con el certificado del censo, en el sobre dirigido a tu mesa.')}</span></li>
+            <li><span>{rich('**Entrégalo en Correos** como muy tarde {when}. Tendrás que identificarte. No hace falta sello: el envío es gratuito.', { when: when('Último día para entregar') })}</span></li>
           </ol>
         </section>
 
         <section id="extranjero">
-          <h2>Si vives en el extranjero</h2>
-          <p>Si estás inscrito en el censo de residentes ausentes (CERA), recibes la documentación sin pedirla. Puedes enviar el voto por correo o depositarlo en el consulado o la embajada en los días que se fijen.</p>
-          <p>Si estás fuera solo temporalmente y sigues en el censo de tu municipio, tienes que solicitar el voto en el consulado dentro de plazo.</p>
+          <h2>{t('Si vives en el extranjero')}</h2>
+          <p>{t('Si estás inscrito en el censo de residentes ausentes (CERA), recibes la documentación sin pedirla. Puedes enviar el voto por correo o depositarlo en el consulado o la embajada en los días que se fijen.')}</p>
+          <p>{t('Si estás fuera solo temporalmente y sigues en el censo de tu municipio, tienes que solicitar el voto en el consulado dentro de plazo.')}</p>
         </section>
 
         <section id="mesa">
-          <h2>Si te toca estar en una mesa</h2>
-          <p>Los miembros de las mesas se eligen por sorteo y se notifica en persona. Es obligatorio: solo te puedes excusar con un motivo justificado y dentro del plazo que figura en la notificación. Tienes derecho a una dieta y a permiso laboral retribuido ese día y a una reducción de jornada el día siguiente.</p>
+          <h2>{t('Si te toca estar en una mesa')}</h2>
+          <p>{t('Los miembros de las mesas se eligen por sorteo y se notifica en persona. Es obligatorio: solo te puedes excusar con un motivo justificado y dentro del plazo que figura en la notificación. Tienes derecho a una dieta y a permiso laboral retribuido ese día y a una reducción de jornada el día siguiente.')}</p>
         </section>
 
         <section id="enlaces">
-          <h2>Webs oficiales</h2>
-          <p>Esta guía resume el procedimiento general. Ante cualquier duda, manda lo que digan estos organismos.</p>
+          <h2>{t('Webs oficiales')}</h2>
+          <p>{t('Esta guía resume el procedimiento general. Ante cualquier duda, manda lo que digan estos organismos.')}</p>
           <ul className="links">
             {OFFICIAL.map((o) => (
-              <li key={o.url}><a href={o.url} target="_blank" rel="noopener noreferrer">{o.name}</a><span className="sans">{o.what}</span></li>
+              <li key={o.url}><a href={o.url} target="_blank" rel="noopener noreferrer">{t(o.name)}</a><span className="sans">{t(o.what)}</span></li>
             ))}
           </ul>
-          <p style={{ marginTop: '1.5rem' }}><a className="btn" href={href('calendario')}>Ver el calendario completo</a></p>
+          <p style={{ marginTop: '1.5rem' }}><a className="btn" href={href('calendario')}>{t('Ver el calendario completo')}</a></p>
         </section>
       </div>
     </main>

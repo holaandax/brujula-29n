@@ -71,3 +71,25 @@ export function UntranslatedNotice() {
   if (locale === 'es') return null;
   return <p className="provisional" role="note"><span>{t('Esta página todavía solo está disponible en castellano.')}</span></p>;
 }
+
+/**
+ * Texto con formato mínimo, traducible como una sola frase:
+ * **negrita** y [texto](#/ruta) o [texto](https://…). Los enlaces externos abren en otra pestaña.
+ */
+export function rich(s: string, vars?: Record<string, string | number>): ReactNode[] {
+  const out: ReactNode[] = [];
+  const re = /\*\*(.+?)\*\*|\[(.+?)\]\((.+?)\)/g;
+  const text = t(s, vars);
+  let last = 0, i = 0;
+  for (let m = re.exec(text); m; m = re.exec(text)) {
+    if (m.index > last) out.push(text.slice(last, m.index));
+    if (m[1] !== undefined) out.push(<strong key={i++}>{m[1]}</strong>);
+    else {
+      const ext = /^https?:/.test(m[3]!);
+      out.push(<a key={i++} href={m[3]} {...(ext ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{m[2]}</a>);
+    }
+    last = re.lastIndex;
+  }
+  if (last < text.length) out.push(text.slice(last));
+  return out;
+}

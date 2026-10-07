@@ -98,7 +98,9 @@ Castellano, català, galego y euskara (selector en la barra superior; la prefere
 
 - `src/i18n/index.tsx`: `t('texto en castellano', { variables })`. Si falta una traducción, se muestra el castellano.
 - `src/i18n/{ca,gl,eu}.ts`: diccionarios. La clave es el texto en castellano.
-- Traducido: cabecera, pie, portada, test (las 30 preguntas y sus opciones), resultados, mapa, comparador y tarjeta para compartir.
-- Pendiente: páginas de partidos, temas, brújula, candidatos, propuestas, pactos, calendario, cómo votar, metodología, fuentes, datos y privacidad. Muestran un aviso en el idioma elegido.
+- Traducida toda la web: portada, test, resultados, partidos, temas, brújula, candidatos, propuestas, pactos, calendario, cómo votar, metodología, fuentes, datos y privacidad.
+- `rich('texto con **negrita** y [enlace](#/ruta)')` para párrafos con formato: se traducen como una sola frase.
+- No se traducen los nombres propios ni las propuestas citadas de los programas (se muestran tal como las publica cada partido).
+- Si una página nueva no está traducida, añádela a `SPANISH_ONLY` en `src/App.tsx` para que muestre un aviso.
 - `tests/i18n.test.ts` falla si un texto pasado a `t()` no tiene traducción en algún idioma o si se pierde una variable.
 - **El euskera necesita revisión por una persona nativa antes de publicar**, sobre todo las preguntas del test.

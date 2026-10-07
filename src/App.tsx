@@ -41,8 +41,8 @@ function Page({ route, param }: ReturnType<typeof useRoute>) {
   }
 }
 
-/** Páginas aún sin traducir: muestran un aviso en el idioma elegido. */
-const SPANISH_ONLY = new Set(['privacidad', 'metodologia', 'fuentes', 'datos', 'partidos', 'temas', 'brujula', 'calendario', 'como-votar', 'pactos', 'propuestas', 'candidatos']);
+/** Todas las páginas están traducidas. Si alguna nueva no lo está, añádela aquí para mostrar el aviso. */
+const SPANISH_ONLY = new Set<string>([]);
 
 function Shell() {
   const r = useRoute();

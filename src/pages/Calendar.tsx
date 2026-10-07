@@ -2,6 +2,7 @@ import { intlLocale } from '../i18n';
 import { ELECTION, PHASES, daysUntil, nextKeyEvent, type CalendarEvent, type CalendarPhase } from '../data/electoral';
 import { PageHead } from '../components/Layout';
 import { href } from '../lib/router';
+import { t as tr } from '../i18n';
 
 const day = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(intlLocale(), { day: 'numeric', month: 'short' }).replace('.', '');
 const weekday = (d: string) => new Date(`${d}T12:00:00`).toLocaleDateString(intlLocale(), { weekday: 'long' });
@@ -21,8 +22,8 @@ export function ProvisionalNotice() {
   if (!ELECTION.calendarProvisional) return null;
   return (
     <p className="provisional" role="note">
-      <strong>Fechas provisionales.</strong>
-      <span>Están pendientes de contrastar con el decreto de convocatoria publicado en el BOE y con la Junta Electoral Central.</span>
+      <strong>{tr('Fechas provisionales.')}</strong>
+      <span>{tr('Están pendientes de contrastar con el decreto de convocatoria publicado en el BOE y con la Junta Electoral Central.')}</span>
     </p>
   );
 }
@@ -34,9 +35,9 @@ export function Calendar() {
   return (
     <main id="contenido" className="wrap">
       <PageHead
-        kicker="Calendario"
-        title="Las fechas del 29N"
-        dek={days > 0 ? `Faltan ${days} días para las elecciones. Del decreto de convocatoria a la constitución de las nuevas Cortes.` : 'Del decreto de convocatoria a la constitución de las nuevas Cortes.'}
+        kicker={tr('Calendario')}
+        title={tr('Las fechas del 29N')}
+        dek={days > 0 ? tr('Faltan {n} días para las elecciones. Del decreto de convocatoria a la constitución de las nuevas Cortes.', { n: days }) : tr('Del decreto de convocatoria a la constitución de las nuevas Cortes.')}
       />
       <ProvisionalNotice />
       {phases.map((ph) => {
@@ -44,14 +45,14 @@ export function Calendar() {
         if (!events.length) return null;
         return (
           <section key={ph} className="cal-phase" aria-labelledby={`ph-${ph}`}>
-            <h2 id={`ph-${ph}`}>{PHASES[ph]}</h2>
+            <h2 id={`ph-${ph}`}>{tr(PHASES[ph])}</h2>
             <ol className="cal">
               {events.map((e) => (
                 <li key={e.label} className={[status(e, next), e.date === ELECTION.date ? 'election' : ''].filter(Boolean).join(' ')}>
-                  <div className="cal-date">{dateRange(e)}<span>{e.end ? 'plazo' : weekday(e.date)}</span></div>
+                  <div className="cal-date">{dateRange(e)}<span>{e.end ? tr('plazo') : weekday(e.date)}</span></div>
                   <div>
-                    <h3>{e.label}</h3>
-                    {e.detail && <p>{e.detail}</p>}
+                    <h3>{tr(e.label)}</h3>
+                    {e.detail && <p>{tr(e.detail)}</p>}
                   </div>
                 </li>
               ))}
@@ -60,7 +61,7 @@ export function Calendar() {
         );
       })}
       <p className="section">
-        <a className="btn" href={href('como-votar')}>Cómo votar, paso a paso</a>
+        <a className="btn" href={href('como-votar')}>{tr('Cómo votar, paso a paso')}</a>
       </p>
     </main>
   );
