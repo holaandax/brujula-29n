@@ -7,7 +7,8 @@ export function Privacy() {
         <li><strong>No se almacenan tus respuestas.</strong> Están solo en la memoria de la pestaña. No se guardan en cookies, localStorage ni ningún otro almacenamiento, y desaparecen al cerrarla o recargarla.</li>
         <li><strong>El cálculo es local.</strong> Las preguntas, las posiciones y el algoritmo se descargan con la página; el resultado se calcula en tu navegador.</li>
         <li><strong>No se envían respuestas a ningún servidor.</strong> La aplicación no tiene base de datos ni API propia. La política de seguridad de la página bloquea las conexiones salientes desde el código.</li>
-        <li><strong>No hay perfiles, cuentas ni analítica.</strong> No pedimos nombre, email ni teléfono, no usamos herramientas de analítica ni publicidad, y no vendemos datos.</li>
+        <li><strong>No hay perfiles, cuentas ni analítica.</strong> No pedimos nombre, email ni teléfono y no vendemos datos.</li>
+        <li><strong>Publicidad.</strong> Si la web muestra anuncios de Google, se cargan solo con tu consentimiento y fuera del test. Google no recibe tus respuestas: el test y el resultado se calculan en tu navegador y no aparecen en la dirección que se envía. No se aceptan anuncios políticos.</li>
         <li><strong>Compartir es decisión tuya.</strong> Si pulsas WhatsApp o X, se abre esa aplicación con un resumen del resultado (no de tus respuestas). Lo que ocurra allí depende de su política de privacidad.</li>
       </ul>
       <h2>Lo que no podemos controlar</h2>

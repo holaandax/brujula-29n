@@ -9,6 +9,7 @@ import { useQuiz } from '../state/quiz';
 import { IdeologyChart } from './IdeologyChart';
 import { PartyComparison } from './PartyComparison';
 import { ShareSection } from './ShareSection';
+import { AdSlot } from './AdSlot';
 
 const qById = new Map(dataset.questions.map((q) => [q.id, q]));
 const topicName = (id: string) => dataset.topics.find((t) => t.id === id)?.name ?? id;
@@ -256,6 +257,7 @@ export function Results() {
           {mode === 'rapido' && <button className="btn" onClick={() => { start('completo'); navigate('test'); }}>Hacer el test completo</button>}
         </div>
       </section>
+      <AdSlot slot="results" />
     </main>
   );
 }

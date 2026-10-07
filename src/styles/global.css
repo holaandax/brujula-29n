@@ -260,3 +260,4 @@ main { min-height: 70vh; padding-block: 1.5rem 4rem; }
   .spectrum-col { flex-direction: row; flex-wrap: wrap; align-items: center; min-height: 44px; }
   .spectrum-head { min-height: 0; width: 8.5rem; flex: none; font-size: .82rem; }
 }
+.ad { margin: 2.5rem 0; padding-top: .5rem; border-top: 1px solid var(--line); min-height: 100px; }

@@ -1,4 +1,5 @@
 import { APP } from '../config';
+import { AdSlot } from './AdSlot';
 import { dataset } from '../data';
 import { circunscripciones, ELECTION } from '../data/electoral';
 import { navigate, href } from '../lib/router';
@@ -49,6 +50,7 @@ export function Landing() {
         </div>
       </section>
 
+      <AdSlot slot="landing" />
       <section className="facts" aria-label="Cómo es el test">
         <div><strong>Se calcula en tu dispositivo</strong><span className="muted">Tus respuestas no salen del navegador y desaparecen al cerrar la pestaña. No guardamos nada, ni siquiera anónimo.</span></div>
         <div><strong>Más que izquierda y derecha</strong><span className="muted">Verás con quién coincides en cada área: puede no ser el mismo partido.</span></div>

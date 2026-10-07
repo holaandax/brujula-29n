@@ -26,3 +26,10 @@ export const SCORING = {
   /** Respuestas mínimas para calcular un resultado. */
   minAnswers: 5,
 };
+
+/** Publicidad. Apagada hasta que AdSense apruebe la web. Bloquea la categoría «Política» en AdSense. */
+export const ADS = {
+  enabled: false,
+  client: 'ca-pub-XXXXXXXXXXXXXXXX',
+  slots: { landing: '', explore: '', results: '' } as Record<string, string>,
+};

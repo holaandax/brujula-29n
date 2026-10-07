@@ -3,6 +3,7 @@ import { SOURCE_TYPE_LABEL, LIKERT } from '../lib/constants';
 import { valueLabel } from '../lib/labels';
 import { href } from '../lib/router';
 import type { Party, Position, Question } from '../types';
+import { AdSlot } from '../components/AdSlot';
 import { PoliticalMap, partyMapPoints } from '../components/IdeologyChart';
 
 const posOf = (party: string, q: string): Position | undefined => dataset.positions.find((p) => p.party === party && p.question === q);
@@ -69,6 +70,7 @@ export function Parties({ id }: { id: string | null }) {
           );
         })}
       </ul>
+      <AdSlot slot="explore" />
     </main>
   );
 }
@@ -99,6 +101,7 @@ function PartyProfile({ party }: { party: Party }) {
           </section>
         );
       })}
+      <AdSlot slot="explore" />
     </main>
   );
 }
@@ -137,6 +140,7 @@ export function Topics({ id }: { id: string | null }) {
           <Spectrum q={q} />
         </section>
       ))}
+      <AdSlot slot="explore" />
     </main>
   );
 }
@@ -150,6 +154,7 @@ export function Compass() {
       {points.length ? <PoliticalMap points={points} /> : <p className="empty">Aún no hay posiciones verificadas suficientes para situar a ninguna candidatura.</p>}
       <p className="note">Territorio, lengua, Europa, instituciones, energía nuclear y defensa no entran en estos ejes. Por eso la afinidad del test es más fiable que la cercanía en este mapa.</p>
       <p><a className="btn primary" href={href('inicio')}>Hacer el test</a></p>
+      <AdSlot slot="explore" />
     </main>
   );
 }
