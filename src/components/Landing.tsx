@@ -61,7 +61,7 @@ export function Landing() {
   const yes = PACT_PRESETS.find((p) => p.id === 'sanchez-2023')!.yes;
   const investidura = [...r2023.results].sort((a, b) => Number(yes.includes(b.party)) - Number(yes.includes(a.party)) || b.seats - a.seats)
     .map((r) => ({ key: r.party, label: `${r.shortName} (${yes.includes(r.party) ? 'sí' : 'no'})`, seats: r.seats, color: r.color }));
-  const faces = candidates.filter((c) => c.name !== 'Por confirmar').slice(0, 6);
+  const faces = candidates.filter((c) => !!c.name).slice(0, 6);
 
   return (
     <main id="contenido" className="wrap wide">
@@ -112,7 +112,7 @@ export function Landing() {
         </Module>
         <Module route="candidatos" kicker="Quién es quién" title="Las caras del 29N"
           art={<div className="mono-row">{faces.map((c) => (
-            <span key={c.party} className="monogram" style={{ background: realParties.find((p) => p.id === c.party)?.color }}>{initials(c.name)}</span>
+            <span key={c.party} className="monogram" style={{ background: realParties.find((p) => p.id === c.party)?.color }}>{initials(c.name ?? "")}</span>
           ))}</div>}>
           Quién encabeza cada candidatura, con su trayectoria y su web.
         </Module>

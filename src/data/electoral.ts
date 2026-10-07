@@ -1,9 +1,11 @@
 /**
  * Datos del proceso electoral.
  *
- * CALENDARIO PROVISIONAL: fechas de trabajo pendientes de contrastar con el Real Decreto de
- * convocatoria (BOE 06/10/2026) y con la Junta Electoral Central. Mientras calendarProvisional
- * sea true, la web lo indica junto al calendario. Al verificarlas, cambiar a false y rellenar BOE_URL.
+ * CALENDARIO VERIFICADO (07/10/2026):
+ *  - Fijadas por el Real Decreto 806/2026 (BOE núm. 248, 06/10/2026): convocatoria, campaña del 13 al 27/11,
+ *    votación el 29/11 y sesión constitutiva de las Cámaras el 23/12 a las 10:00.
+ *  - El resto son plazos de la LOREG contados desde la convocatoria (arts. 39, 44, 46, 47, 69, 72, 73, 103, 107).
+ * Fuentes en data/sources-electoral.ts.
  */
 export type CalendarPhase = 'convocatoria' | 'candidaturas' | 'voto-correo' | 'campana' | 'votacion' | 'despues';
 
@@ -31,15 +33,16 @@ export const ELECTION = {
   name: 'Elecciones generales',
   date: '2026-11-29',
   chambers: ['Congreso de los Diputados', 'Senado'] as const,
-  calendarProvisional: true,
+  calendarProvisional: false,
   calendar: [
     { date: '2026-10-06', label: 'Publicación del decreto de convocatoria en el BOE', detail: 'Se disuelven el Congreso y el Senado y se constituye la Diputación Permanente.', phase: 'convocatoria', key: true },
     { date: '2026-10-06', end: '2026-11-19', label: 'Plazo para pedir el voto por correo', detail: 'En cualquier oficina de Correos o en su web, con DNI electrónico o certificado digital.', phase: 'voto-correo', key: true },
-    { date: '2026-10-13', end: '2026-10-20', label: 'Consulta del censo electoral', detail: 'Puedes comprobar que estás inscrito y reclamar si hay algún error.', phase: 'convocatoria' },
+    { date: '2026-10-12', end: '2026-10-19', label: 'Consulta del censo electoral', detail: 'Puedes comprobar que estás inscrito y reclamar si hay algún error.', phase: 'convocatoria' },
     { date: '2026-10-16', label: 'Último día para comunicar coaliciones', phase: 'candidaturas', key: true },
     { date: '2026-10-21', end: '2026-10-26', label: 'Presentación de candidaturas', detail: 'Los partidos entregan sus listas a las juntas electorales provinciales.', phase: 'candidaturas', key: true },
     { date: '2026-10-28', label: 'Publicación en el BOE de las candidaturas presentadas', phase: 'candidaturas' },
-    { date: '2026-11-03', label: 'Proclamación de candidaturas en el BOE', detail: 'A partir de aquí se conoce la lista definitiva de candidaturas en cada provincia.', phase: 'candidaturas', key: true },
+    { date: '2026-11-02', label: 'Proclamación de candidaturas', detail: 'Las juntas electorales provinciales proclaman las listas admitidas.', phase: 'candidaturas' },
+    { date: '2026-11-03', label: 'Publicación en el BOE de las candidaturas proclamadas', detail: 'A partir de aquí se conoce la lista definitiva de candidaturas en cada provincia.', phase: 'candidaturas', key: true },
     { date: '2026-11-09', end: '2026-11-22', label: 'Envío a casa de la documentación del voto por correo', phase: 'voto-correo' },
     { date: '2026-11-13', label: 'Empieza la campaña electoral', detail: 'Arranca a las 00:00 y dura 15 días.', phase: 'campana', key: true },
     { date: '2026-11-23', label: 'Último día para publicar encuestas', phase: 'campana' },
@@ -51,7 +54,7 @@ export const ELECTION = {
     { date: '2026-12-23', label: 'Constitución de las nuevas Cortes', phase: 'despues', key: true },
   ] satisfies CalendarEvent[] as CalendarEvent[],
   /** Rellenar con la URL del BOE una vez verificada. Vacío = no se muestra enlace. */
-  BOE_URL: '',
+  BOE_URL: 'https://www.boe.es/boe/dias/2026/10/06/pdfs/BOE-A-2026-20742.pdf',
 };
 
 /** Días naturales entre hoy y una fecha (negativo si ya pasó). */

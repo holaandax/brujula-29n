@@ -1,40 +1,45 @@
 /**
- * QUIÉN ES QUIÉN — CANDIDATOS A LA PRESIDENCIA (PROVISIONAL).
+ * QUIÉN ES QUIÉN — CANDIDATURAS A LA PRESIDENCIA DEL GOBIERNO.
  *
- * Las listas no se proclaman hasta el 03/11/2026. Mientras tanto se muestra, para cada formación,
- * a quien la encabezó en 2023 o la lidera hoy, con provisional: true.
+ * Estados:
+ *  - 'proclamado': figura en las candidaturas proclamadas (BOE, 03/11/2026). Fuente tier 1.
+ *  - 'anunciado':  el partido lo ha anunciado públicamente; pendiente de proclamación.
+ *  - 'pendiente':  no hay candidato confirmado. name queda vacío; note resume el estado con su fuente.
  *
- * Fotos: colocar el archivo en public/candidatos/<party>.jpg (formato vertical 4:5, 600×750 aprox.)
- * y poner photo: '/candidatos/<party>.jpg'. Usar solo imágenes con licencia que permita su uso
- * (p. ej. fotos oficiales de prensa del partido o del Congreso). Sin foto se muestran las iniciales.
+ * Nunca se rellena un nombre por suposición (quién encabezó en 2023, quién es portavoz…).
  *
- * url: perfil o página del candidato. Si se deja vacío, se enlaza la web oficial del partido.
+ * Fotos: solo con licencia compatible (Wikimedia Commons con CC BY/CC BY-SA, fotos oficiales con
+ * permiso de uso). Guardar en public/candidatos/<party>.webp y completar photoCredit.
  */
+export type CandidateStatus = 'proclamado' | 'anunciado' | 'pendiente';
+
 export interface Candidate {
   party: string;
-  name: string;
+  status: CandidateStatus;
+  name?: string;
   role: string;
+  note?: string;
+  sourceId: string;
+  updatedAt: string;
   photo?: string;
+  photoCredit?: { author: string; license: string; url: string };
   url?: string;
-  bio?: string;
-  provisional: boolean;
 }
 
-const role = 'Candidato a la Presidencia del Gobierno';
-const roleF = 'Candidata a la Presidencia del Gobierno';
-const head = (circ: string) => `Cabeza de lista por ${circ}`;
+const U = '2026-10-07';
+const role = 'Candidatura a la Presidencia del Gobierno';
 
 export const candidates: Candidate[] = [
-  { party: 'psoe', name: 'Pedro Sánchez', role, bio: 'Presidente del Gobierno desde 2018 y secretario general del PSOE.', provisional: true },
-  { party: 'pp', name: 'Alberto Núñez Feijóo', role, bio: 'Presidente del PP desde 2022. Fue presidente de la Xunta de Galicia entre 2009 y 2022.', provisional: true },
-  { party: 'vox', name: 'Santiago Abascal', role, bio: 'Presidente de Vox desde 2014.', provisional: true },
-  { party: 'sumar', name: 'Por confirmar', role: 'Candidatura del Frente Amplio', bio: 'El Frente Amplio presenta su proyecto y su candidato el 17 de octubre.', provisional: true },
-  { party: 'podemos', name: 'Irene Montero', role: roleF, bio: 'Eurodiputada. Fue ministra de Igualdad entre 2020 y 2023.', provisional: true },
-  { party: 'erc', name: 'Gabriel Rufián', role: head('Barcelona'), bio: 'Diputado desde 2016 y portavoz de ERC en el Congreso desde 2019.', provisional: true },
-  { party: 'junts', name: 'Míriam Nogueras', role: head('Barcelona'), bio: 'Portavoz de Junts en el Congreso desde 2019.', provisional: true },
-  { party: 'bildu', name: 'Mertxe Aizpurua', role: head('Gipuzkoa'), bio: 'Portavoz de EH Bildu en el Congreso desde 2019.', provisional: true },
-  { party: 'pnv', name: 'Aitor Esteban', role: head('Bizkaia'), bio: 'Presidente del PNV desde 2025. Fue portavoz en el Congreso entre 2012 y 2025.', provisional: true },
-  { party: 'bng', name: 'Néstor Rego', role: head('A Coruña'), bio: 'Diputado del BNG en el Congreso desde 2019.', provisional: true },
-  { party: 'cc', name: 'Cristina Valido', role: head('Santa Cruz de Tenerife'), provisional: true },
-  { party: 'upn', name: 'Alberto Catalán', role: head('Navarra'), provisional: true },
+  { party: 'psoe', status: 'anunciado', name: 'Pedro Sánchez', role, sourceId: 'eldebate-20261005', updatedAt: U },
+  { party: 'pp', status: 'anunciado', name: 'Alberto Núñez Feijóo', role, sourceId: 'eldebate-20261005', updatedAt: U },
+  { party: 'vox', status: 'anunciado', name: 'Santiago Abascal', role, sourceId: 'eldebate-20261005', updatedAt: U },
+  { party: 'sumar', status: 'pendiente', role: 'Candidatura del Frente Amplio', note: 'Movimiento Sumar, IU, Más Madrid y Comuns tienen previsto presentar el proyecto y su cabeza de cartel el 17 de octubre.', sourceId: 'articulo14-20261005', updatedAt: U },
+  { party: 'podemos', status: 'pendiente', role, note: 'Podemos propone primarias abiertas el 14 y el 15 de octubre, a las que se presentaría Irene Montero.', sourceId: 'deia-20261006', updatedAt: U },
+  { party: 'erc', status: 'pendiente', role, note: 'Oriol Junqueras ha dicho que Gabriel Rufián será el candidato; Rufián no lo ha confirmado.', sourceId: 'deia-20261006', updatedAt: U },
+  { party: 'junts', status: 'pendiente', role, note: 'Míriam Nogueras ha anunciado que quiere repetir como candidata.', sourceId: 'deia-20261006', updatedAt: U },
+  { party: 'bildu', status: 'pendiente', role, note: 'Los procesos internos para elegir cabezas de lista están en marcha.', sourceId: 'deia-20261006', updatedAt: U },
+  { party: 'pnv', status: 'pendiente', role, note: 'Los procesos internos para elegir cabezas de lista están en marcha.', sourceId: 'deia-20261006', updatedAt: U },
+  { party: 'bng', status: 'pendiente', role, sourceId: 'loreg', updatedAt: U },
+  { party: 'cc', status: 'pendiente', role, sourceId: 'loreg', updatedAt: U },
+  { party: 'upn', status: 'pendiente', role, sourceId: 'loreg', updatedAt: U },
 ];
