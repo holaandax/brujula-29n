@@ -26,6 +26,7 @@ Detalle de lo que falta y cómo añadirlo: [`docs/DATOS.md`](docs/DATOS.md).
 - Test rápido (20) y completo (30). En el completo, cada pregunta se puede marcar como importante (peso ×2).
 - Resultado general, ranking, afinidad por área, «¿por qué coincides?», respuestas más influyentes, mapa, comparador y tarjeta para compartir.
 - Explorar sin hacer el test: **Partidos** (ficha con cada posición y su fuente), **Temas** (espectro de posiciones por pregunta) y **Brújula**.
+- Guía electoral: **Calendario** (fases, plazos y cuenta atrás), **Cómo votar** (en persona, papeletas, blanco y nulo, correo, extranjero, mesas), **Calculadora de pactos** (hemiciclo con los escaños de 2023 e investiduras reales como punto de partida), **Compara propuestas** (por tema y partido) y **Quién es quién** (candidatos con foto y enlace).
 - Posiciones **documentadas** frente a **estimadas** (etiqueta visible y confianza máxima 0,6).
 - Fuentes, datos auditables, metodología y privacidad.
 
@@ -60,18 +61,21 @@ src/
     topics.ts          áreas y pesos
     questions.ts       las 20 preguntas, peso y eje del mapa
     parties.ts         candidaturas reales (estado pendiente)
-    positions.ts       posiciones y fuentes reales (vacío, con plantilla)
+    positions.ts       posiciones, fuentes y propuestas reales (vacío, con plantilla)
     demo.ts            dataset ficticio
-    electoral.ts       calendario y 52 circunscripciones
+    electoral.ts       calendario (provisional) y 52 circunscripciones
+    results.ts         escaños oficiales por elección y votaciones de investidura (calculadora de pactos)
+    candidates.ts      quién es quién: nombre, cargo, foto y enlace por partido
     index.ts           selección y saneado del dataset activo
   lib/
     scoring.ts         algoritmo (puro, sin React)
+    pacts.ts           recuento de investidura y geometría del hemiciclo (puro)
     validate.ts        validación y saneado del dataset
     labels.ts, share.ts, router.ts, hooks.ts, constants.ts
   state/quiz.tsx       estado del test en memoria (useReducer + Context)
-  components/          Landing, Quiz, Results, IdeologyChart, PartyComparison, ShareSection, Layout
-  pages/               Methodology, Sources, DataView, Privacy
-tests/                 scoring.test.ts, dataset.test.ts
+  components/          Landing, Quiz, Results, Hemicycle, IdeologyChart, PartyComparison, ShareSection, Layout
+  pages/               Calendar, HowToVote, Pacts, Proposals, Candidates, Explore, Methodology, Sources, DataView, Privacy
+tests/                 scoring.test.ts, dataset.test.ts, pacts.test.ts
 docs/                  METODOLOGIA.md, DATOS.md
 ```
 

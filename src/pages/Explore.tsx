@@ -5,6 +5,7 @@ import { href } from '../lib/router';
 import type { Party, Position, Question } from '../types';
 import { AdSlot } from '../components/AdSlot';
 import { PoliticalMap, partyMapPoints } from '../components/IdeologyChart';
+import { PageHead } from '../components/Layout';
 
 const posOf = (party: string, q: string): Position | undefined => dataset.positions.find((p) => p.party === party && p.question === q);
 const srcOf = (pos?: Position) => (pos?.sourceId ? dataset.sources.find((s) => s.id === pos.sourceId) : undefined);
@@ -54,8 +55,7 @@ export function Parties({ id }: { id: string | null }) {
   if (party) return <PartyProfile party={party} />;
   return (
     <main id="contenido" className="wrap prose">
-      <h1>Qué defiende cada candidatura</h1>
-      <p>Consulta las posiciones antes o después del test. Cada una enlaza con su fuente.</p>
+      <PageHead kicker="Partidos" title="Qué defiende cada candidatura" dek="Sus posiciones en cada pregunta del test, antes o después de hacerlo. Cada una enlaza con su fuente." />
       <ul className="party-grid">
         {dataset.parties.map((p) => {
           const n = dataset.positions.filter((x) => x.party === p.id && x.value !== null).length;
@@ -78,10 +78,9 @@ export function Parties({ id }: { id: string | null }) {
 function PartyProfile({ party }: { party: Party }) {
   return (
     <main id="contenido" className="wrap prose">
-      <p className="small"><a href={href('partidos')}>Todas las candidaturas</a></p>
-      <h1><span className="swatch" style={{ background: party.color, width: 16, height: 16 }} />{party.name}</h1>
-      <p>{party.description}</p>
-      <p className="small"><a href={href('fuentes') }>Programa, web y fuentes</a></p>
+      <PageHead kicker="Partidos" title={<><span className="swatch" style={{ background: party.color, width: 18, height: 18 }} />{party.name}</>} dek={party.description}>
+        <p className="small sans" style={{ margin: '1rem 0 0' }}><a href={href('partidos')}>Todas las candidaturas</a> · <a href={href('fuentes')}>Programa, web y fuentes</a></p>
+      </PageHead>
       {dataset.topics.map((t) => {
         const qs = dataset.questions.filter((q) => q.topic === t.id);
         return (
@@ -111,8 +110,7 @@ export function Topics({ id }: { id: string | null }) {
   if (!topic) {
     return (
       <main id="contenido" className="wrap prose">
-        <h1>Los temas del test</h1>
-        <p>{dataset.topics.length} áreas, {dataset.questions.length} preguntas. Las que solo aparecen en el test completo van marcadas.</p>
+        <PageHead kicker="Temas" title="Los temas del test" dek={`${dataset.topics.length} áreas y ${dataset.questions.length} preguntas. Las que solo aparecen en el test completo van marcadas.`} />
         <ul className="party-grid">
           {dataset.topics.map((t) => (
             <li key={t.id}>
@@ -129,9 +127,9 @@ export function Topics({ id }: { id: string | null }) {
   const qs = dataset.questions.filter((q) => q.topic === topic.id);
   return (
     <main id="contenido" className="wrap prose">
-      <p className="small"><a href={href('temas')}>Todos los temas</a></p>
-      <h1>{topic.name}</h1>
-      <p>{topic.description} Así se sitúa cada candidatura en cada pregunta. Un asterisco indica posición estimada.</p>
+      <PageHead kicker="Temas" title={topic.name} dek={`${topic.description} Así se sitúa cada candidatura en cada pregunta. Un asterisco indica posición estimada.`}>
+        <p className="small sans" style={{ margin: '1rem 0 0' }}><a href={href('temas')}>Todos los temas</a> · <a href={href('propuestas', topic.id)}>Propuestas sobre este tema</a></p>
+      </PageHead>
       {qs.map((q) => (
         <section key={q.id} className="topic-q">
           <h2>{q.subtopic}{q.set === 'completo' && <span className="tag">test completo</span>}</h2>
@@ -149,8 +147,7 @@ export function Compass() {
   const points = partyMapPoints();
   return (
     <main id="contenido" className="wrap narrow prose">
-      <h1>Brújula política</h1>
-      <p>Dónde quedan las candidaturas en dos ejes simplificados: economía (izquierda y derecha) y valores sociales (progresista y conservador). Haz el test para ver dónde quedas tú.</p>
+      <PageHead kicker="Brújula" title="La brújula política" dek="Dónde quedan las candidaturas en dos ejes simplificados: economía (izquierda y derecha) y valores sociales (progresista y conservador). Haz el test para ver dónde quedas tú." />
       {points.length ? <PoliticalMap points={points} /> : <p className="empty">Aún no hay posiciones verificadas suficientes para situar a ninguna candidatura.</p>}
       <p className="note">Territorio, lengua, Europa, instituciones, energía nuclear y defensa no entran en estos ejes. Por eso la afinidad del test es más fiable que la cercanía en este mapa.</p>
       <p><a className="btn primary" href={href('inicio')}>Hacer el test</a></p>

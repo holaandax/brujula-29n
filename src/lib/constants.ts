@@ -28,3 +28,7 @@ export const LIKERT = [
   { value: 0.5, label: 'De acuerdo', short: 'De acuerdo' },
   { value: 1, label: 'Muy de acuerdo', short: 'Muy de acuerdo' },
 ] as const;
+
+/** Aviso de privacidad del test (portada y primera pregunta). Decir «tus respuestas», no «tus datos». */
+export const PRIVACY_TAGS = ['Resultado al momento', 'Sin registro', 'Anónimo'];
+export const PRIVACY_LINE = 'Tus respuestas no salen de tu navegador y no las guardamos en ningún sitio.';

@@ -40,6 +40,13 @@ describe('el validador detecta problemas', () => {
   it('URL inválida', () => { const d = broken(); d.parties[0]!.website = { url: 'javascript:alert(1)', verified: true }; expect(codes(d)).toContain('party.url'); });
   it('posición estimada con confianza alta', () => { const d = broken(); d.positions[0]!.estimated = true; expect(codes(d)).toContain('position.estimatedConfidence'); });
   it('null con fuente es válido (no se trata como error)', () => { const d = broken(); d.positions[0]!.value = null; expect(codes(d)).toEqual([]); });
+  it('propuesta de un partido inexistente', () => { const d = broken(); d.proposals.push({ party: 'nadie', topic: 'economia', text: 'x' }); expect(codes(d)).toContain('proposal.party'); });
+  it('propuesta con fuente de otro partido', () => { const d = broken(); d.proposals[0]!.sourceId = 'demo-delta-src'; expect(codes(d)).toContain('proposal.sourceParty'); });
+  it('propuesta sin texto', () => { const d = broken(); d.proposals[0]!.text = '  '; expect(codes(d)).toContain('proposal.text'); });
+  it('el saneado descarta propuestas inválidas', () => {
+    const d = broken(); d.proposals[0]!.topic = 'nada' as never;
+    expect(sanitizeDataset(d).dataset.proposals).toHaveLength(d.proposals.length - 1);
+  });
   it('el saneado descarta posiciones inválidas sin romper', () => {
     const d = broken(); d.positions[0]!.value = 7;
     const { dataset } = sanitizeDataset(d);

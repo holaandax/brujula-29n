@@ -1,8 +1,9 @@
+import { PageHead } from '../components/Layout';
+
 export function Privacy() {
   return (
     <main id="contenido" className="wrap narrow prose">
-      <h1>Privacidad</h1>
-      <p>Este test se ha construido para que tus opiniones políticas no salgan de tu dispositivo.</p>
+      <PageHead kicker="Privacidad" title="Privacidad" dek="Este test se ha construido para que tus respuestas no salgan de tu dispositivo." />
       <ul>
         <li><strong>No se almacenan tus respuestas.</strong> Están solo en la memoria de la pestaña. No se guardan en cookies, localStorage ni ningún otro almacenamiento, y desaparecen al cerrarla o recargarla.</li>
         <li><strong>El cálculo es local.</strong> Las preguntas, las posiciones y el algoritmo se descargan con la página; el resultado se calcula en tu navegador.</li>

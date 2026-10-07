@@ -14,9 +14,13 @@ const Parties = lazy(() => loadExplore().then((m) => ({ default: m.Parties })));
 const Topics = lazy(() => loadExplore().then((m) => ({ default: m.Topics })));
 const Compass = lazy(() => loadExplore().then((m) => ({ default: m.Compass })));
 const Privacy = lazy(() => import('./pages/Privacy').then((m) => ({ default: m.Privacy })));
+const Calendar = lazy(() => import('./pages/Calendar').then((m) => ({ default: m.Calendar })));
+const HowToVote = lazy(() => import('./pages/HowToVote').then((m) => ({ default: m.HowToVote })));
+const Pacts = lazy(() => import('./pages/Pacts').then((m) => ({ default: m.Pacts })));
+const Proposals = lazy(() => import('./pages/Proposals').then((m) => ({ default: m.Proposals })));
+const Candidates = lazy(() => import('./pages/Candidates').then((m) => ({ default: m.Candidates })));
 
-function Page() {
-  const { route, param } = useRoute();
+function Page({ route, param }: ReturnType<typeof useRoute>) {
   switch (route) {
     case 'test': return <Quiz />;
     case 'resultado': return <Results />;
@@ -27,17 +31,23 @@ function Page() {
     case 'partidos': return <Parties id={param} />;
     case 'temas': return <Topics id={param} />;
     case 'brujula': return <Compass />;
+    case 'calendario': return <Calendar />;
+    case 'como-votar': return <HowToVote />;
+    case 'pactos': return <Pacts />;
+    case 'propuestas': return <Proposals key={param ?? ''} topic={param} />;
+    case 'candidatos': return <Candidates />;
     default: return <Landing />;
   }
 }
 
 export default function App() {
+  const r = useRoute();
   return (
     <QuizProvider>
-      <Header />
+      <Header route={r.route} />
       <ErrorBoundary>
         <Suspense fallback={<main className="wrap" aria-busy="true" />}>
-          <Page />
+          <Page {...r} />
         </Suspense>
       </ErrorBoundary>
       <Footer />
